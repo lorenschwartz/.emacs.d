@@ -1,0 +1,6 @@
+configuration.el
+/elpa
+/tutorial
+/url
+/xkcd
+*.el~
