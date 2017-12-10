@@ -10,8 +10,8 @@
   '(org-agenda-diary-file (concat org-directory "Diary.org"))
 ;;  '(org-ellipsis "⤵")
   '(org-startup-truncated nil)
-  '(org-agenda-span 7)
-  '(org-deadline-warning-days 14)
+;;  '(org-agenda-span 7)
+  '(org-deadline-warning-days 7)
   '(org-agenda-show-all-dates t)
   '(org-agenda-skip-deadline-if-done t)
   '(org-agenda-start-on-weekday nil)
@@ -23,7 +23,7 @@
   '(org-src-window-setup 'current-window)
   '(org-confirm-babel-evaluate nil))
 
-(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\|taskpaper\\)$" . org-mode))
 
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
@@ -32,7 +32,7 @@
 #+END_SRC
 ** Custom Key Bindings
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f12>") 'org-agenda)
+(global-set-key (kbd "<f12>") 'ls/org-agenda)
 (global-set-key (kbd "M-s") 'save-buffer)
 (global-set-key (kbd "M-z") 'undo)
 (global-set-key (kbd "<f6>") 'split-window-horizontally)
@@ -48,7 +48,7 @@
   "* TODO %? %^g\n %U\n Scheduled:%^t\n")
   ("p" "project" entry (file+headline "~/Dropbox/org-files/Main.org" "Projects & Priorities")
   "* NEW %?\n %U\n")
-  ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+  ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Notes & Links")
   "* %?\n %U\n")
   ("i" "idea" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
   "* IDEA %?\n %U\n")
@@ -101,59 +101,65 @@
 
 ** Org Agenda defaults
 #+BEGIN_SRC emacs-lisp
-;;(setq org-agenda-files
-;;      (find-lisp-find-files "~/Dropbox" "\.org$"))
+  ;;(setq org-agenda-files
+  ;;      (find-lisp-find-files "~/Dropbox" "\.org$"))
 
-(defun ls/org-skip-subtree-if-priority (priority)
-  "Skip an agenda subtree if it has a priority of PRIORITY.
-PRIORITY may be one of the characters ?A, ?B, or ?C."
-  (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-	(pri-value (* 1000 (- org-lowest-priority priority)))
-	(pri-current (org-get-priority (thing-at-point 'line t))))
-    (if (= pri-value pri-current)
-	subtree-end
-      nil)))
+  (defun ls/org-skip-subtree-if-priority (priority)
+    "Skip an agenda subtree if it has a priority of PRIORITY.
+  PRIORITY may be one of the characters ?A, ?B, or ?C."
+    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+	  (pri-value (* 1000 (- org-lowest-priority priority)))
+	  (pri-current (org-get-priority (thing-at-point 'line t))))
+      (if (= pri-value pri-current) subtree-end nil)))
 
+;; most of the following was copied from Aaron Bieber's blog [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][here]]
 (setq org-agenda-custom-commands
-      '(("c" "Custom agenda view"
+      '(("c" "Custom Agenda View"
 	 ((tags "PRIORITY=\"A\""
 		((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-		 (org-agenda-overriding-header "High-priority unfinished tasks:")))
-;;          (("D" tags "Delegated"
-;;	        ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-;;                 ))
-	  (agenda "")
-	  (alltodo ""
-		   ((org-agenda-skip-function
-		     '(or (ls/org-skip-subtree-if-priority ?A)
-			  (org-agenda-skip-if nil '(scheduled deadline))))))))))
+		 (org-agenda-overriding-header "High Priority Unfinished Items")))
+	  (todo "DELEGATED"
+		 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		  (org-agenda-sorting-strategy '(priority-down))
+		  (org-agenda-overriding-header "Delegated Tasks and Projects")))
+	  (tags "RRSManagers"
+		((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		 (org-agenda-sorting-strategy '(priority-down))
+		 (org-show-context-detail 'minimal)
+		 (org-agenda-overriding-header "RRS Manager Agenda Items")))
+	   (agenda "" ((org-agenda-ndays 1)))
+	   (alltodo ""
+		    ((org-agenda-skip-function
+		    '(or (ls/org-skip-subtree-if-priority ?A)
+			   (org-agenda-skip-if nil '(scheduled deadline))
+			   (org-agenda-skip-entry-if 'todo '("DELEGATED"))))))))))
 
-;; Keep tasks with dates on the global todo lists
-(setq org-agenda-todo-ignore-with-date nil)
+  ;; Keep tasks with dates on the global todo lists
+  (setq org-agenda-todo-ignore-with-date nil)
 
-;; Keep tasks with deadlines on the global todo lists
-(setq org-agenda-todo-ignore-deadlines nil)
+  ;; Keep tasks with deadlines on the global todo lists
+  (setq org-agenda-todo-ignore-deadlines nil)
 
-;; Keep tasks with scheduled dates on the global todo lists
-(setq org-agenda-todo-ignore-timestamp nil)
+  ;; Keep tasks with scheduled dates on the global todo lists
+  (setq org-agenda-todo-ignore-timestamp nil)
 
-;; Keep tasks with timestamps on the global todo lists
-(setq org-agenda-todo-ignore-timestamp nil)
+  ;; Keep tasks with timestamps on the global todo lists
+  (setq org-agenda-todo-ignore-timestamp nil)
 
-;; Remove completed deadline tasks from the agenda view
-(setq org-agenda-skip-deadline-if-done t)
+  ;; Remove completed deadline tasks from the agenda view
+  (setq org-agenda-skip-deadline-if-done t)
 
-;; Remove completed scheduled tasks from the agenda view
-(setq org-agenda-skip-scheduled-if-done t)
+  ;; Remove completed scheduled tasks from the agenda view
+  (setq org-agenda-skip-scheduled-if-done t)
 
-;; Remove completed items from search results
-(setq org-agenda-skip-timestamp-if-done t)
+  ;; Remove completed items from search results
+  (setq org-agenda-skip-timestamp-if-done t)
 
-;; Prompts for a reason when moving a deadline
-(setq org-log-redeadline (quote time))
+  ;; Prompts for a reason when moving a deadline
+  (setq org-log-redeadline (quote time))
 
-;; Prompts for a reason when moving a scheduled task
-(setq org-log-reschedule (quote time))
+  ;; Prompts for a reason when moving a scheduled task
+  (setq org-log-reschedule (quote time))
 #+END_SRC
 ** Org-bullets mode
 #+BEGIN_SRC emacs-lisp
@@ -751,8 +757,18 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+END_SRC
 ** Configure yasnippet
 #+BEGIN_SRC emacs-lisp
-(setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
+(add-to-list 'load-path
+              "~/.emacs.d/plugins/yasnippet")
+(require 'yasnippet)
 (yas-global-mode 1)
+(setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
+(define-key yas-minor-mode-map (kbd "<tab>") nil)
+(define-key yas-minor-mode-map (kbd "TAB") nil)
+;; Bind `SPC' to `yas-expand' when snippet expansion available (it
+;; will still call `self-insert-command' otherwise).
+(define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
+;; Bind `C-c y' to `yas-expand' ONLY.
+(define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
 #+END_SRC
 ** Configure abbrev-mode
 #+BEGIN_SRC emacs-lisp
@@ -873,4 +889,57 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
 (require 'xkcd)
+#+END_SRC
+* Auto-udpate packages
+#+BEGIN_SRC emacs-lisp
+(require 'auto-package-update)
+(auto-package-update-maybe)
+(setq auto-package-update-prompt-before-update t)
+(setq auto-package-update-delete-old-versions t)
+#+END_SRC
+* Elfeed setup
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x w") 'elfeed)
+
+(setq-default elfeed-search-filter "@1-week-ago +unread ")
+
+;; Entries older than 2 weeks are marked as read
+(add-hook 'elfeed-new-entry-hook
+          (elfeed-make-tagger :before "2 weeks ago"
+                              :remove 'unread))
+;; Feeds
+(setq elfeed-feeds
+      '("http://nullprogram.com/feed/"
+        "http://planet.emacsen.org/atom.xml"
+	"http://r3cev.com/feed/"
+	"http://markmanson.net/feed"
+	"http://endlessparentheses.com/atom.xml"
+	"http://rss.mckinseyquarterly.com/ad"
+	"http://feeds.harvardbusiness.org/harvardbusiness/"
+))
+#+END_SRC
+* Popwin config
+#+BEGIN_SRC emacs-lisp
+(require 'popwin)
+(popwin-mode 1)
+#+END_SRC
+* PDF Tools config
+#+BEGIN_SRC emacs-lisp
+(use-package pdf-tools
+ :pin manual ;; manually update
+ :config
+ ;; open pdfs scaled to fit page
+ (setq-default pdf-view-display-size 'fit-page)
+ ;; automatically annotate highlights
+ (setq pdf-annot-activate-created-annotations t)
+ ;; use normal isearch
+ (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+ ;; turn off cua so copy works
+ (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
+ ;; more fine-grained zooming
+ (setq pdf-view-resize-factor 1.1)
+ ;; keyboard shortcuts
+ (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
+ (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
+ (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
 #+END_SRC
