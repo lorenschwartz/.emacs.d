@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 * Set personal information
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Loren B. Schwartz"
@@ -8,8 +7,6 @@
      calendar-location-name "Vaughan, ON")
 (setq calendar-daylight-time-zone-name "EST")
 #+END_SRC
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Org mode defaults
 ** Basic org-mode setup
 #+BEGIN_SRC emacs-lisp
@@ -77,12 +74,7 @@
 | i | idea    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * IDEA %?\n %U\n                     |
 | m | minutes | entry | (file+headline ~/Dropbox/org-files/Main.org Minutes)               | * MEETING %^{Title} %^g %^T\n %?\n   |
 | a | agenda  | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * OPEN %? %^g\n %U\n %^g\n           |
-<<<<<<< HEAD
 ;;** Org TODO keywords
-=======
-
-** Org TODO keywords
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
   '((sequence "TODO" "NEXT(n)" "DOING(!)" "|" "DONE(d)" "CANCELLED(X)")
@@ -103,7 +95,6 @@
 | sequence | IDEA          | EVALUATE       |                       |                   | ABANDON | PURSUE  |              |
 | sequence | TO READ       | READING        |                       |                   | DONE    |         |              |
 | sequence | NEW           | PLANNING(p@/!) | EXECUTION-ON TIME(x!) | EXECUTION-LATE(!) |         |         | COMPLETE(c)  |
-<<<<<<< HEAD
 ** Org TODO keywords
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
@@ -128,8 +119,6 @@
 | sequence | ISSUE         |                |                       | RESOLVED          |          |         |              |             |
 | sequence | DEPENDENCY    |                |                       | CLOSED            |          |         |              |             |
 | sequence | NEW           | PLANNING(p@/!) | EXECUTION-ON TIME(x!) | EXECUTION-LATE(!) | HOLD(H!) |         |              | COMPLETE(c) |
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 ** Todo state triggers
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-state-tags-triggers
@@ -141,19 +130,9 @@
               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 #+END_SRC
-<<<<<<< HEAD
 ** Org Agenda defaults
 #+BEGIN_SRC emacs-lisp
 (defun ls/org-skip-subtree-if-priority (priority)
-=======
-
-** Org Agenda defaults
-#+BEGIN_SRC emacs-lisp
-  ;;(setq org-agenda-files
-  ;;      (find-lisp-find-files "~/Dropbox" "\.org$"))
-
-  (defun ls/org-skip-subtree-if-priority (priority)
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
     "Skip an agenda subtree if it has a priority of PRIORITY.
   PRIORITY may be one of the characters ?A, ?B, or ?C."
     (let ((subtree-end (save-excursion (org-end-of-subtree t)))
@@ -181,12 +160,8 @@
 		    ((org-agenda-skip-function
 		    '(or (ls/org-skip-subtree-if-priority ?A)
 			   (org-agenda-skip-if nil '(scheduled deadline))
-<<<<<<< HEAD
                            (org-agenda-skip-entry-if 'regexp ":RRSManagers::")
 			   (org-agenda-skip-entry-if 'todo '("DELEGATED" "ISSUE" "DEPENDENCY" "NEW" "PLANNING" "EXECUTION-ON TIME" "EXECUTION-LATE"))))))))))
-=======
-			   (org-agenda-skip-entry-if 'todo '("DELEGATED"))))))))))
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 
   ;; Keep tasks with dates on the global todo lists
   (setq org-agenda-todo-ignore-with-date nil)
@@ -264,11 +239,6 @@
    ("People" . ?P)
    ("Process" . ?p)
    ("Project" . ?r)
-<<<<<<< HEAD
-=======
-   ("SteerCo" . ?S)
-   ("MiFIDII" . ?M)
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
    ("Nelson" . ?n)))
 #+END_SRC
 ** Project tracking defaults
@@ -306,7 +276,6 @@
             (or subtree-end (point-max)))
         next-headline))))
 #+END_SRC
-<<<<<<< HEAD
 ** Org babel
 #+BEGIN_SRC emacs-lisp
 (org-babel-do-load-languages
@@ -451,22 +420,6 @@
                   nil))  ; available to archive
             (or subtree-end (point-max)))
         next-headline))))
-=======
-** Stuck project settings
-** Inbox settings
-#+BEGIN_SRC emacs-lisp
-(setq org-inbox-file "~/Dropbox/org-files/Inbox.org")
-
-(defun ls/copy-tasks-from-inbox ()
-  (when (file-exists-p org-default-notes-file)
-    (save-excursion
-      (find-file org-default-notes-file)
-      (goto-char (point-max))
-      (insert-file-contents org-index-file)
-      (delete-file org-default-notes-file))))
-
-(global-set-key (kbd "C-c i") 'ls/copy-tasks-from-inbox)
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+END_SRC
 ** Org babel
 #+BEGIN_SRC emacs-lisp
@@ -474,25 +427,18 @@
  'org-babel-load-languages
  '((python . t)))
 (require 'ob-python)
-<<<<<<< HEAD
 
 ;; Use syntax highlighting in source blocks while editing
 (setq org-src-fontify-natively t)
 
 ;;Enable spell-check in org mode
 (add-hook 'org-mode-hook 'flyspell-mode)
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+END_SRC
 ** Export
 #+BEGIN_SRC emacs-lisp
 (require 'ox-md)
 #+END_SRC
-<<<<<<< HEAD
 ;;* Sensible defaults
-=======
-* Sensible defaults
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 ** Utility functions
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/comment-or-uncomment-region-or-line ()
@@ -539,14 +485,11 @@ there's no active region."
 #+END_SRC
 ** Settings
 #+BEGIN_SRC emacs-lisp
-<<<<<<< HEAD
 ;;Disable the bell sound
 (setq ring-bell-function 'ignore)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 (defun sensible-defaults/open-files-from-home-directory ()
   "When opening a file, start searching at the user's home
 directory."
@@ -694,10 +637,6 @@ insert the text where point is, not where the mouse cursor is."
   (sensible-defaults/add-line-mode)
   (sensible-defaults/electric-pair-mode))
 #+END_SRC
-<<<<<<< HEAD
-=======
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 ** Keybindings
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/bind-commenting-and-uncommenting ()
@@ -726,10 +665,6 @@ respectively."
   (sensible-defaults/bind-home-and-end-keys)
   (sensible-defaults/bind-keys-to-change-text-size))
 #+END_SRC
-<<<<<<< HEAD
-=======
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 ** Setting backup location and policies
 #+BEGIN_SRC emacs-lisp
 (defvar --backup-directory (concat user-emacs-directory "backups"))
@@ -756,22 +691,10 @@ respectively."
 (sensible-defaults/use-all-settings)
 (sensible-defaults/use-all-keybindings)
 #+END_SRC
-<<<<<<< HEAD
 ** Easy-to-add emacs-lisp templates
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'org-structure-template-alist
 	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
-=======
-
-* Set personal information
-#+BEGIN_SRC emacs-lisp
-(setq user-full-name "Loren B. Schwartz"
-     user-mail-address "lorecanbefound@gmail.com"
-     calendar-latitude 43.8647
-     calendar-longitude -79.4679
-     calendar-location-name "Vaughan, ON")
-(setq calendar-daylight-time-zone-name "EST")
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+END_SRC
 * Command line configurations
 Added to open emacs UI from the CL
@@ -809,19 +732,6 @@ Added to open emacs UI from the CL
              '(font . "Source Code Pro-14"))
 (set-face-attribute 'default nil :height 120)
 #+END_SRC
-<<<<<<< HEAD
-=======
-
-# ** Display emojis
-# #+BEGIN_SRC emacs-lisp
-# (let ((font (if (= emacs-major-version 25)
-#                 "Symbola"
-#               (cond ((string-equal system-type "darwin")    "Apple Color Emoji")
-#                     ((string-equal system-type "gnu/linux") "Symbola")))))
-#   (set-fontset-font t 'unicode font nil 'prepend))
-# #+END_SRC
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Engine-mode settings
 #+BEGIN_SRC emacs-lisp
 (require 'engine-mode)
@@ -871,7 +781,6 @@ Added to open emacs UI from the CL
 #+BEGIN_SRC emacs-lisp
 (global-linum-mode t)
 #+END_SRC
-<<<<<<< HEAD
 ** Visiting the config file
 Quickly edit the config file in ~/.emacs.d/configuration.org.
 #+BEGIN_SRC emacs-lisp
@@ -922,12 +831,6 @@ Simply press C-c r to reload the config file.
   :ensure t)
 (global-set-key "\C-s" 'swiper)
 #+END_SRC
-=======
-
-#+RESULTS:
-: t
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Autocomplete settings
 ** org-mode autocomplete
 #+BEGIN_SRC emacs-lisp
@@ -990,7 +893,6 @@ Simply press C-c r to reload the config file.
 ;;            (local-set-key [3 25] 'org-copy-subtree))
 ;;)
 #+END_SRC
-<<<<<<< HEAD
 ** Spaceline
 #+BEGIN_SRC emacs-lisp
 (use-package spaceline
@@ -1021,8 +923,6 @@ Simply press C-c r to reload the config file.
       (fancy-battery-mode)
       (display-battery-mode)))
 #+END_SRC
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Programming customizations
 ** Emacs-lisps
 #+BEGIN_SRC emacs-lisp
@@ -1039,13 +939,8 @@ Simply press C-c r to reload the config file.
 ** PEP-8
 #+BEGIN_SRC emacs-lisp
 ;; enable autopep8 formatting on save
-<<<<<<< HEAD
 ;;(require 'py-autopep8)
 ;;(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
-=======
-(require 'py-autopep8)
-(add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+END_SRC
 ** Lisps
 #+BEGIN_SRC emacs-lisp
@@ -1068,10 +963,6 @@ Simply press C-c r to reload the config file.
 (require 'json)
 (elpy-enable)
 (require 'ein)
-<<<<<<< HEAD
-=======
-(elpy-use-ipython)
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 
 (define-key yas-minor-mode-map (kbd "C-c k") 'yas-expand)
 (define-key global-map (kbd "C-c o") 'iedit-mode)
@@ -1082,7 +973,6 @@ Simply press C-c r to reload the config file.
  :regexp "[[:alnum:]_]+"
  :doc-spec
  '(("(python)Index" nil "")))
-<<<<<<< HEAD
 #+END_SRC
 ** Terminal settings
 #+BEGIN_SRC emacs-lisp
@@ -1091,9 +981,6 @@ Simply press C-c r to reload the config file.
   (interactive (list my-term-shell)))
 (ad-activate 'ansi-term)
 (global-set-key (kbd "<s-return>") 'ansi-term)
-=======
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 #+END_SRC
 * Editing settings
 ** Always kill current buffer
@@ -1147,21 +1034,11 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 * Open my standard set of files
 #+BEGIN_SRC emacs-lisp
 (find-file (concat org-directory "org-files/Main.org"))
-<<<<<<< HEAD
 #+END_SRC
 * Emoji
 ;;#+BEGIN_SRC emacs-lisp
 ;;(add-hook 'after-init-hook 'global-emojify-mode)
 ;;#+END_SRC
-=======
-;;(find-file (concat org-directory "org-files/Inbox.org"))
-;;(find-file "~/.emacs.d/configuration.org")
-#+END_SRC
-* Emoji
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'global-emojify-mode)
-#+END_SRC
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Yaml-mode
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
@@ -1181,11 +1058,7 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+BEGIN_SRC emacs-lisp
 (require 'helm-mode)
 (require 'helm-config)
-<<<<<<< HEAD
 (setq org-completion-use-ido nil)
-=======
-
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 ;; rebind tab to run persistant action
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 
@@ -1195,51 +1068,7 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 (helm-mode 1)
 (global-set-key (kbd "C-x b") 'helm-buffers-list)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
-<<<<<<< HEAD
 #+END_SRC
-=======
-
-#+END_SRC
-* Frames instead of windows
-# #+BEGIN_SRC emacs-lisp
-# ;; Make frames instead of windows
-# (set 'pop-up-frames 'graphic-only)
-
-# ;; Control GUD spam
-# (set 'gdb-use-separate-io-buffer nil)
-# (set 'gdb-many-windows nil)
-
-# ;; Additional settings for org-mode
-# (set 'org-agenda-window-setup 'other-frame)
-# (set 'org-src-window-setup 'other-frame)
-
-# ;; Prevent additional weird stuff from happening
-# ;; Focus follows mouse off to prevent crazy things happening when I click on
-# ;; e.g. compilation error links.
-# (set 'mouse-autoselect-window nil)
-# (set 'focus-follows-mouse nil)
-
-# ;; kill frames when a buffer is buried, makes most things play nice with
-# ;; frames
-# (set 'frame-auto-hide-function 'delete-frame)
-
-# ;; Additional hooks for packages that don't play nice with this setup
-# (defvar kill-frame-when-buffer-killed-buffer-list
-#   '("*RefTeX Select*" "*Help*" "*Popup Help*")
-#   "Buffer names for which the containing frame should be
-#   killed when the buffer is killed.")
-
-# (defun kill-frame-if-current-buffer-matches ()
-#   "Kill frames as well when certain buffers are closed, helps stop some
-#   packages spamming frames."
-#  (interactive)
-#  (if (member (buffer-name) kill-frame-when-buffer-killed-buffer-list)
-#      (delete-frame)))
-
-# (add-hook 'kill-buffer-hook 'kill-frame-if-current-buffer-matches)
-
-# #+END_SRC
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Magit
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "C-x g") 'magit-status)
@@ -1280,13 +1109,10 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 	"http://feeds.harvardbusiness.org/harvardbusiness/"
 ))
 #+END_SRC
-<<<<<<< HEAD
 * Neotree config
 #+BEGIN_SRC emacs-lisp
 (add-hook 'after-init-hook 'neotree-show)
 #+END_SRC
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
 * Popwin config
 #+BEGIN_SRC emacs-lisp
 (require 'popwin)
@@ -1312,7 +1138,6 @@ Assume that I always want to kill the current buffer when hitting C-x k.
  (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
  (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
 #+END_SRC
-<<<<<<< HEAD
 * Auto-complete and ispell
 #+BEGIN_SRC emacs-lisp
 ;; Completion words longer than 4 characters
@@ -1367,5 +1192,3 @@ Assume that I always want to kill the current buffer when hitting C-x k.
       (point-at-eol)))))
 (global-set-key (kbd "C-c l") 'ls/copy-whole-line)
 #+END_SRC
-=======
->>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
