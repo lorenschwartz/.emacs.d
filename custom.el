@@ -25,8 +25,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+<<<<<<< HEAD
  '(ac-ispell-fuzzy-limit 2)
  '(ac-ispell-requires 4)
+=======
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
@@ -63,21 +66,36 @@
    (quote
     ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
  '(magit-diff-use-overlays nil)
+<<<<<<< HEAD
  '(neo-window-position (quote right))
+=======
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
  '(org-agenda-diary-file (concat org-directory "Diary.org"))
  '(org-agenda-file (quote org-directory))
  '(org-agenda-files
    (quote
+<<<<<<< HEAD
     ("/Users/lorenschwartz/Dropbox/org-files/Main.org" "/Users/lorenschwartz/Dropbox/org-files/Inbox.org")))
  '(org-agenda-include-diary t)
  '(org-agenda-ndays 7)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)
+=======
+    ("/Users/lorenschwartz/Dropbox/org-files/Reading-list.org" "/Users/lorenschwartz/Dropbox/org-files/Main.org" "/Users/lorenschwartz/Dropbox/org-files/Journal.org" "/Users/lorenschwartz/Dropbox/org-files/Inbox.org")))
+ '(org-agenda-include-diary t)
+ '(org-agenda-ndays 7)
+ '(org-agenda-show-all-dates t)
+ '(org-agenda-skip-deadline-if-done t t)
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
  '(org-agenda-span 7)
  '(org-agenda-start-on-weekday nil)
  '(org-archive-location "%s_archive::datetree/*")
  '(org-confirm-babel-evaluate nil)
+<<<<<<< HEAD
  '(org-deadline-warning-days 7)
+=======
+ '(org-deadline-warning-days 14)
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
  '(org-default-notes-file (concat org-directory "org-files/Inbox.org"))
  '(org-directory "~/Dropbox/")
  '(org-ellipsis "⤵")
@@ -91,7 +109,11 @@
  '(org-startup-truncated nil)
  '(package-selected-packages
    (quote
+<<<<<<< HEAD
     (swiper switch-window which-key fancy-battery spaceline ac-ispell all-the-icons wsd-mode fastnav monokai-theme magit xkcd use-package treemacs-projectile treemacs markdown-mode minimap exec-path-from-shell ein py-autopep8 flycheck helm project-explorer python orgbox yaml-mode projectile dashboard page-break-lines ecukes multiple-cursors emojify emoji-fontset neotree gruvbox-theme jedi elpy org-ac ac-emoji solarized-theme org-bullets google-this engine-mode diffview darkroom csv-mode color-theme-sanityinc-tomorrow)))
+=======
+    (magit xkcd use-package treemacs-projectile treemacs markdown-mode minimap exec-path-from-shell ein py-autopep8 flycheck helm project-explorer python orgbox yaml-mode projectile dashboard page-break-lines ecukes multiple-cursors emojify emoji-fontset neotree gruvbox-theme jedi elpy org-ac ac-emoji solarized-theme org-bullets google-this engine-mode diffview darkroom csv-mode color-theme-sanityinc-tomorrow)))
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))

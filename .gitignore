@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .el
 .last-package-update-day
 .mc-lists.el
@@ -16,3 +17,7 @@ network-security.data
 request/
 url/
 configuration.org~
+=======
+/tutorial
+/xkcd
+>>>>>>> 33cc63a7899d1f164d59ec60f1d547c85e1d347e
