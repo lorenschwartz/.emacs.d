@@ -1,3 +1,8 @@
+* Command line configs
+;; Added to open emacs UI from the CL
+#+BEGIN_SRC emacs-lisp
+(x-focus-frame nil)
+#+END_SRC
 * Set personal information
 #+BEGIN_SRC emacs-lisp
 (setq user-full-name "Loren B. Schwartz"
@@ -7,39 +12,7 @@
      calendar-location-name "Vaughan, ON")
 (setq calendar-daylight-time-zone-name "EST")
 #+END_SRC
-* Org mode defaults
-** Basic org-mode setup
-#+BEGIN_SRC emacs-lisp
-(load-library "find-lisp")
-
-(custom-set-variables
-  '(org-directory "~/Dropbox/")
-  '(org-default-notes-file (concat org-directory "org-files/Inbox.org"))
-  '(org-index-file (concat org-directory "org-files/Main.org"))
-  '(org-agenda-diary-file (concat org-directory "Diary.org"))
-;;  '(org-ellipsis "⤵")
-  '(org-startup-truncated nil)
-;;  '(org-agenda-span 7)
-  '(org-deadline-warning-days 7)
-  '(org-agenda-show-all-dates t)
-  '(org-agenda-skip-deadline-if-done t)
-  '(org-agenda-start-on-weekday nil)
-  '(org-reverse-note-order t)
-  '(org-agenda-include-diary t)
-  '(org-log-done 'time)
-  '(org-src-fontify-natively t)
-  '(org-src-tabs-act-natively t)
-  '(org-src-window-setup 'current-window)
-  '(org-confirm-babel-evaluate nil))
-
-(add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\|taskpaper\\)$" . org-mode))
-
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(define-key global-map "\C-ct" 'org-capture)
-(define-key global-map "\C-cb" 'org-iswitchb)
-#+END_SRC
-** Custom Key Bindings
+* Custom Key Bindings
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f12>") 'ls/org-agenda)
 (global-set-key (kbd "M-s") 'save-buffer)
@@ -50,31 +23,79 @@
 (setq mac-command-modifier 'meta); make Command keys do Meta
 (setq mac-option-modifier 'super); make Option keys do Super
 #+END_SRC
+* Org mode defaults
+** Basic org-mode setup
+#+BEGIN_SRC emacs-lisp
+    (load-library "find-lisp")
+    (setq org-agenda-files
+	  (find-lisp-find-files "~/Dropbox/" "\.org$"))
+
+  (add-to-list 'org-modules 'org-mac-iCal)
+
+  (custom-set-variables
+      '(org-directory "~/Dropbox/")
+      '(org-default-notes-file (concat org-directory "org-files/Inbox.org"))
+      '(org-index-file (concat org-directory "org-files/Main.org"))
+      '(org-startup-truncated t)
+      '(org-agenda-span 5)
+      '(org-deadline-warning-days 7)
+      '(org-agenda-show-all-dates t)
+      '(org-agenda-skip-deadline-if-done t)
+      '(org-agenda-start-on-weekday t)
+      '(org-reverse-note-order t)
+      '(org-agenda-include-diary t)
+      '(org-log-done 'time)
+      '(org-src-fontify-natively t)
+      '(org-src-tabs-act-natively t)
+      '(org-src-window-setup 'current-window)
+      '(org-confirm-babel-evaluate nil))
+
+    (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\|taskpaper\\)$" . org-mode))
+
+    (add-to-list 'org-modules 'org-mac-ical)
+
+    (define-key global-map "\C-cl" 'org-store-link)
+    (define-key global-map "\C-ca" 'org-agenda)
+    (define-key global-map "\C-ct" 'org-capture)
+    (define-key global-map "\C-cb" 'org-iswitchb)
+#+END_SRC
+** Custom Key Bindings
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "<f12>") 'ls/org-agenda)
+(global-set-key (kbd "M-s") 'save-buffer)
+(global-set-key (kbd "M-z") 'undo)
+(global-set-key (kbd "<f6>") 'split-window-horizontally)
+(global-set-key (kbd "<f7>") 'split-window-vertically)
+(global-set-key (kbd "<f8>") 'delete-window)
+(global-set-key (kbd "C-c C-e") 'org-export-dispatch)
+(setq mac-command-modifier 'meta); make Command keys do Meta
+(setq mac-option-modifier 'super); make Option keys do Super
+#+END_SRC
 ** Capture templates
 #+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-  '(("t" "todo" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* TODO %? %^g\n %U\n Scheduled:%^t\n")
-  ("p" "project" entry (file+headline "~/Dropbox/org-files/Main.org" "Projects & Priorities")
-  "* NEW %?\n %U\n")
-  ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Notes & Links")
-  "* %?\n %U\n")
-  ("i" "idea" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* IDEA %?\n %U\n")
-  ("m" "minutes" entry (file+headline "~/Dropbox/org-files/Main.org" "Minutes")
-  "* MEETING %^{Title} %^g %^T\n %?\n")
-  ("a" "agenda" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* OPEN %? %^g\n %U\n %^g\n")))
+  (setq org-capture-templates
+    '(("t" "todo with date" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+       "* TODO %? %^g\n %U\n SCHEDULED:%^t\n")
+      ("d" "todo with deadline" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+       "* TODO %? %^g\n %U\n DEADLINE:%^t\n")
+      ("e" "todo no date" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+       "* TODO %? %^g\n %U\n")
+      ("r" "Reg Update" entry (file+headline "~/Dropbox/org-files/Main.org" "Regulatory Updates")
+       "* OPEN %? :Reg:\n %U\n")
+    ("p" "project" entry (file+headline "~/Dropbox/org-files/Main.org" "Projects & Priorities")
+    "* NEW %?\n %U\n")
+    ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Notes & Links")
+    "* %?\n %U\n")
+    ("i" "idea" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+    "* IDEA %?\n %U\n")
+    ("m" "minutes" entry (file+headline "~/Dropbox/org-files/Main.org" "Minutes")
+    "* MEETING %^{Title} %^T %^g\n %?\n")
+    ("o" "observation" entry (file+headline "~/Dropbox/org-files/Main.org" "Personal Observations")
+     "* %?\n %U\n")
+    ("a" "agenda" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
+    "* OPEN %? %^g\n %U\n %^g\n")))
 #+END_SRC
-
-#+RESULTS:
-| t | todo    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * TODO %? %^g\n %U\n Scheduled:%^t\n |
-| p | project | entry | (file+headline ~/Dropbox/org-files/Main.org Projects & Priorities) | * NEW %?\n %U\n                      |
-| n | note    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * %?\n %U\n                          |
-| i | idea    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * IDEA %?\n %U\n                     |
-| m | minutes | entry | (file+headline ~/Dropbox/org-files/Main.org Minutes)               | * MEETING %^{Title} %^g %^T\n %?\n   |
-| a | agenda  | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * OPEN %? %^g\n %U\n %^g\n           |
-;;** Org TODO keywords
+** Org TODO keywords
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-keywords
   '((sequence "TODO" "NEXT(n)" "DOING(!)" "|" "DONE(d)" "CANCELLED(X)")
@@ -87,39 +108,7 @@
    (sequence "DEPENDENCY" "|" "DEPENDENCY CLOSED")
    (sequence "NEW" "PLANNING(p@/!)" "EXECUTION-ON TIME(x!)" "EXECUTION-LATE(!)" "|" "COMPLETE(c)")))
 #+END_SRC
-
-#+RESULTS:
-| sequence | TODO          | NEXT(n)        | DOING(!)              |                   |         | DONE(d) | CANCELLED(X) |
-| sequence | WAITING(w@/!) | HOLD(h@/!)     | DELEGATED(D)          |                   |         | DONE    |              |
-| sequence | OPEN          |                |                       | CLOSED(l)         |         |         |              |
-| sequence | IDEA          | EVALUATE       |                       |                   | ABANDON | PURSUE  |              |
-| sequence | TO READ       | READING        |                       |                   | DONE    |         |              |
-| sequence | NEW           | PLANNING(p@/!) | EXECUTION-ON TIME(x!) | EXECUTION-LATE(!) |         |         | COMPLETE(c)  |
-** Org TODO keywords
-#+BEGIN_SRC emacs-lisp
-(setq org-todo-keywords
-  '((sequence "TODO" "NEXT(n)" "DOING(!)" "|" "DONE(d)" "CANCELLED(X)")
-   (sequence "WAITING(w@/!)" "HOLD(h@/!)" "DELEGATED(D)" "|" "DONE")
-   (sequence "OPEN" "|" "CLOSED(l)")
-   (sequence "IDEA" "EVALUATE" "|" "ABANDON" "PURSUE")
-   (sequence "TO READ" "READING" "|" "DONE")
-   (sequence "RISK" "|" "CLOSED")
-   (sequence "ISSUE" "|" "RESOLVED")
-   (sequence "DEPENDENCY" "|" "CLOSED")
-   (sequence "NEW" "PLANNING(p@/!)" "EXECUTION-ON TIME(x!)" "EXECUTION-LATE(!)" "HOLD(H!)" "|" "COMPLETE(c)")))
-#+END_SRC
-
-#+RESULTS:
-| sequence | TODO          | NEXT(n)        | DOING(!)              |                   |          | DONE(d) | CANCELLED(X) |             |
-| sequence | WAITING(w@/!) | HOLD(h@/!)     | DELEGATED(D)          |                   |          | DONE    |              |             |
-| sequence | OPEN          |                |                       | CLOSED(l)         |          |         |              |             |
-| sequence | IDEA          | EVALUATE       |                       |                   | ABANDON  | PURSUE  |              |             |
-| sequence | TO READ       | READING        |                       |                   | DONE     |         |              |             |
-| sequence | RISK          |                |                       | CLOSED            |          |         |              |             |
-| sequence | ISSUE         |                |                       | RESOLVED          |          |         |              |             |
-| sequence | DEPENDENCY    |                |                       | CLOSED            |          |         |              |             |
-| sequence | NEW           | PLANNING(p@/!) | EXECUTION-ON TIME(x!) | EXECUTION-LATE(!) | HOLD(H!) |         |              | COMPLETE(c) |
-** Todo state triggers
+** To-do state triggers
 #+BEGIN_SRC emacs-lisp
 (setq org-todo-state-tags-triggers
       (quote (("CANCELLED" ("CANCELLED" . t))
@@ -132,63 +121,63 @@
 #+END_SRC
 ** Org Agenda defaults
 #+BEGIN_SRC emacs-lisp
-(defun ls/org-skip-subtree-if-priority (priority)
-    "Skip an agenda subtree if it has a priority of PRIORITY.
-  PRIORITY may be one of the characters ?A, ?B, or ?C."
-    (let ((subtree-end (save-excursion (org-end-of-subtree t)))
-	  (pri-value (* 1000 (- org-lowest-priority priority)))
-	  (pri-current (org-get-priority (thing-at-point 'line t))))
-      (if (= pri-value pri-current) subtree-end nil)))
+	;; most of the following was copied from Aaron Bieber's blog [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][here]]
+    (defun ls/org-skip-subtree-if-priority (priority)
+	"Skip an agenda subtree if it has a priority of PRIORITY.
+         PRIORITY may be one of the characters ?A, ?B, or ?C."
+	(let ((subtree-end (save-excursion (org-end-of-subtree t)))
+	      (pri-value (* 1000 (- org-lowest-priority priority)))
+	      (pri-current (org-get-priority (thing-at-point 'line t))))
+	  (if (= pri-value pri-current) subtree-end nil)))
 
-;; most of the following was copied from Aaron Bieber's blog [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][here]]
-(setq org-agenda-custom-commands
-      '(("c" "Custom Agenda View"
-	 ((tags "PRIORITY=\"A\""
-		((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-		 (org-agenda-overriding-header "High Priority Unfinished Items")))
-	  (todo "DELEGATED"
-		 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-		  (org-agenda-sorting-strategy '(priority-down))
-		  (org-agenda-overriding-header "Delegated Tasks and Projects")))
-	  (tags "RRSManagers"
-		((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-		 (org-agenda-sorting-strategy '(priority-down))
-		 (org-show-context-detail 'minimal)
-		 (org-agenda-overriding-header "RRS Manager Agenda Items")))
-	   (agenda "" ((org-agenda-ndays 1)))
-	   (alltodo ""
-		    ((org-agenda-skip-function
-		    '(or (ls/org-skip-subtree-if-priority ?A)
-			   (org-agenda-skip-if nil '(scheduled deadline))
-                           (org-agenda-skip-entry-if 'regexp ":RRSManagers::")
-			   (org-agenda-skip-entry-if 'todo '("DELEGATED" "ISSUE" "DEPENDENCY" "NEW" "PLANNING" "EXECUTION-ON TIME" "EXECUTION-LATE"))))))))))
+    ;; (setq org-agenda-custom-commands
+    ;;   '(("c" "Work Custom Agenda View"
+    ;;       ((tags "PRIORITY=\"A\""
+    ;; 	    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+    ;; 	     (org-agenda-overriding-header "High Priority Items")))
+    ;;        (tags "PRIORITY=\"B\""
+    ;; 	   ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+    ;; 	    (org-agenda-overriding-header "Medium Priority Items")))
+    ;;        (tags "PRIORITY=\"C\""
+    ;; 	     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+    ;; 	      (org-agenda-overriding-header "Low Priority Items")))
+    ;;        (agenda "")
+    ;;        (alltodo ""
+    ;; 	       ((org-agenda-skip-function
+    ;; 		 '(or (ls/org-skip-subtree-if-priority ?A)
+    ;; 		      (ls/org-skip-subtree-if-priority ?B)
+    ;; 		      (ls/org-skip-subtree-if-priority ?C)
+    ;; 		      (org-agenda-skip-entry-if '(scheduled deadline))
+    ;; 		      (org-agenda-skip-entry-if 'regexp ":RRSManagers::")
+    ;; 		      (org-agenda-skip-entry-if 'todo '("DELEGATED" "ISSUE" "DEPENDENCY" "NEW" "PLANNING" ;;"EX
+  ;;  ECUTION-ON TIME" "EXECUTION-LATE"))))))))))
 
-  ;; Keep tasks with dates on the global todo lists
-  (setq org-agenda-todo-ignore-with-date nil)
+      ;; Keep tasks with dates on the global todo lists
+      (setq org-agenda-todo-ignore-with-date nil)
 
-  ;; Keep tasks with deadlines on the global todo lists
-  (setq org-agenda-todo-ignore-deadlines nil)
+      ;; Keep tasks with deadlines on the global todo lists
+      (setq org-agenda-todo-ignore-deadlines nil)
 
-  ;; Keep tasks with scheduled dates on the global todo lists
-  (setq org-agenda-todo-ignore-timestamp nil)
+      ;; Keep tasks with scheduled dates on the global todo lists
+      (setq org-agenda-todo-ignore-timestamp nil)
 
-  ;; Keep tasks with timestamps on the global todo lists
-  (setq org-agenda-todo-ignore-timestamp nil)
+      ;; Keep tasks with timestamps on the global todo lists
+      (setq org-agenda-todo-ignore-timestamp nil)
 
-  ;; Remove completed deadline tasks from the agenda view
-  (setq org-agenda-skip-deadline-if-done t)
+      ;; Remove completed deadline tasks from the agenda view
+      (setq org-agenda-skip-deadline-if-done t)
 
-  ;; Remove completed scheduled tasks from the agenda view
-  (setq org-agenda-skip-scheduled-if-done t)
+      ;; Remove completed scheduled tasks from the agenda view
+      (setq org-agenda-skip-scheduled-if-done t)
 
-  ;; Remove completed items from search results
-  (setq org-agenda-skip-timestamp-if-done t)
+      ;; Remove completed items from search results
+      (setq org-agenda-skip-timestamp-if-done t)
 
-  ;; Prompts for a reason when moving a deadline
-  (setq org-log-redeadline (quote time))
+      ;; Prompts for a reason when moving a deadline
+      ;;(setq org-log-redeadline (quote time))
 
-  ;; Prompts for a reason when moving a scheduled task
-  (setq org-log-reschedule (quote time))
+      ;; Prompts for a reason when moving a scheduled task
+      ;;(setq org-log-reschedule (quote time))
 #+END_SRC
 ** Org-bullets mode
 #+BEGIN_SRC emacs-lisp
@@ -285,359 +274,295 @@
 
 ;; Use syntax highlighting in source blocks while editing
 (setq org-src-fontify-natively t)
-
-;;Enable spell-check in org mode
-(add-hook 'org-mode-hook 'flyspell-mode)
-#+END_SRC
-** Custom Key Bindings
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f12>") 'ls/org-agenda)
-(global-set-key (kbd "M-s") 'save-buffer)
-(global-set-key (kbd "M-z") 'undo)
-(global-set-key (kbd "<f6>") 'split-window-horizontally)
-(global-set-key (kbd "<f7>") 'split-window-vertically)
-(global-set-key (kbd "<f8>") 'delete-window)
-(setq mac-command-modifier 'meta); make Command keys do Meta
-(setq mac-option-modifier 'super); make Option keys do Super
-#+END_SRC
-** Capture templates
-#+BEGIN_SRC emacs-lisp
-(setq org-capture-templates
-  '(("t" "todo" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* TODO %? %^g\n %U\n Scheduled:%^t\n")
-  ("p" "project" entry (file+headline "~/Dropbox/org-files/Main.org" "Projects & Priorities")
-  "* NEW %?\n %U\n")
-  ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Notes & Links")
-  "* %?\n %U\n")
-  ("i" "idea" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* IDEA %?\n %U\n")
-  ("m" "minutes" entry (file+headline "~/Dropbox/org-files/Main.org" "Minutes")
-  "* MEETING %^{Title} %^g %^T\n %?\n")
-  ("a" "agenda" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-  "* OPEN %? %^g\n %U\n %^g\n")))
-#+END_SRC
-
-#+RESULTS:
-| t | todo    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * TODO %? %^g\n %U\n Scheduled:%^t\n |
-| p | project | entry | (file+headline ~/Dropbox/org-files/Main.org Projects & Priorities) | * NEW %?\n %U\n                      |
-| n | note    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * %?\n %U\n                          |
-| i | idea    | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * IDEA %?\n %U\n                     |
-| m | minutes | entry | (file+headline ~/Dropbox/org-files/Main.org Minutes)               | * MEETING %^{Title} %^g %^T\n %?\n   |
-| a | agenda  | entry | (file+headline ~/Dropbox/org-files/Main.org Inbox)                 | * OPEN %? %^g\n %U\n %^g\n           |
-** Todo state triggers
-#+BEGIN_SRC emacs-lisp
-(setq org-todo-state-tags-triggers
-      (quote (("CANCELLED" ("CANCELLED" . t))
-              ("WAITING" ("WAITING" . t))
-              ("HOLD" ("WAITING") ("HOLD" . t))
-              (done ("WAITING") ("HOLD"))
-              ("TODO" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
-              ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
-#+END_SRC
+#+END_SRCq
+** Org-reveal
+ #+BEGIN_SRC emacs-lisp
+    (add-to-list 'load-path "~/org-reveal/")
+   (require 'ox-reveal)
+  ;; (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+   (setq org-reveal-root "file:///Users/darkhelmet/reveal.js")
+   (require 'htmlize)
+ #+END_SRC
+** Org-mode hooks
+ #+BEGIN_SRC emacs-lisp
+ (add-hook 'org-mode-hook 'turn-on-flyspell)
+ #+END_SRC
+** Easy-to-add emacs-lisp templates
+ #+BEGIN_SRC emacs-lisp
+ (add-to-list 'org-structure-template-alist
+		'("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
+ #+END_SRC
+** Setting backup location and policies
+ #+BEGIN_SRC emacs-lisp
+ (defvar --backup-directory (concat user-emacs-directory "backups"))
+   "Sets the backup directory and if one is not created, creates the directory.
+  Also, sets the backup frequency, number of backups, versions, etc."
+ (if (not (file-exists-p --backup-directory))
+         (make-directory --backup-directory t))
+ (setq backup-directory-alist `(("." . ,--backup-directory)))
+ (setq make-backup-files t               ; backup of a file the first time it is saved.
+       backup-by-copying t               ; don't clobber symlinks
+       version-control t                 ; version numbers for backup files
+       delete-old-versions t             ; delete excess backup files silently
+       delete-by-moving-to-trash t
+       kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+       kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+       auto-save-default t               ; auto-save every buffer that visits a file
+       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+       )
+ #+END_SRC
 ** Org-bullets mode
-#+BEGIN_SRC emacs-lisp
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-#+END_SRC
-** Refile settings
-#+BEGIN_SRC emacs-lisp
-;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                 (org-agenda-files :maxlevel . 9))))
-
-; Use full outline paths for refile targets - we file directly with IDO
-(setq org-refile-use-outline-path t)
-
-; Targets complete directly with IDO
-(setq org-outline-path-complete-in-steps nil)
-
-; Allow refile to create parent tasks with confirmation
-(setq org-refile-allow-creating-parent-nodes (quote confirm))
-
-;; Use IDO for both buffer and file completion and ido-everywhere to t
-(setq org-completion-use-ido t)
-(setq ido-everywhere t)
-(setq ido-max-directory-size 100000)
-(ido-mode (quote both))
-;; Use the current window when visiting files and buffers with ido
-(setq ido-default-file-method 'selected-window)
-(setq ido-default-buffer-method 'selected-window)
-;; Use the other window for indirect buffer display
-(setq org-indirect-buffer-display 'other-window)
-
-;;;; Refile settings
-;; Exclude DONE state tasks from refile targets
-(defun verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets"
-  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
-
-(setq org-refile-target-verify-function 'verify-refile-target)
-#+END_SRC
-** Tags
-#+BEGIN_SRC emacs-lisp
-(setq org-tag-alist
-  '(("@work" . ?w)
-   ("@home" . ?h)
-   ("CMTRMT" . ?C)
-   ("RRSManagers" . ?R)
-   ("People" . ?P)
-   ("Process" . ?p)
-   ("Project" . ?r)
-   ("Nelson" . ?n)))
-#+END_SRC
+ #+BEGIN_SRC emacs-lisp
+ (require 'org-bullets)
+ (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+ #+END_SRC
 ** Project tracking defaults
-#+BEGIN_SRC emacs-lisp
-(defun org-summary-todo (n-done n-not-done)
-       "Switch entry to DONE when all subentries are done, to TODO otherwise."
-       (let (org-log-done org-log-states)   ; turn off logging
-         (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+ #+BEGIN_SRC emacs-lisp
+ (defun org-summary-todo (n-done n-not-done)
+	"Switch entry to DONE when all subentries are done, to TODO otherwise."
+	(let (org-log-done org-log-states)   ; turn off logging
+          (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
-(add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-(setq org-archive-mark-done nil)
+ (add-hook 'org-after-todo-statistics-hook 'org-summary-todo)
+ #+END_SRC
+ #+BEGIN_SRC emacs-lisp
+ (setq org-archive-mark-done nil)
 
-(defun bh/skip-non-archivable-tasks ()
-  "Skip trees that are not available for archiving"
-  (save-restriction
-    (widen)
-    ;; Consider only tasks with done todo headings as archivable candidates
-    (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
-          (subtree-end (save-excursion (org-end-of-subtree t))))
-      (if (member (org-get-todo-state) org-todo-keywords-1)
-          (if (member (org-get-todo-state) org-done-keywords)
-              (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
-                     (a-month-ago (* 60 60 24 (+ daynr 1)))
-                     (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
-                     (this-month (format-time-string "%Y-%m-" (current-time)))
-                     (subtree-is-current (save-excursion
-                                           (forward-line 1)
-                                           (and (< (point) subtree-end)
-                                                (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
-                (if subtree-is-current
-                    subtree-end ; Has a date in this month or last month, skip it
-                  nil))  ; available to archive
-            (or subtree-end (point-max)))
-        next-headline))))
-#+END_SRC
+ (defun bh/skip-non-archivable-tasks ()
+   "Skip trees that are not available for archiving"
+   (save-restriction
+     (widen)
+     ;; Consider only tasks with done todo headings as archivable candidates
+     (let ((next-headline (save-excursion (or (outline-next-heading) (point-max))))
+           (subtree-end (save-excursion (org-end-of-subtree t))))
+       (if (member (org-get-todo-state) org-todo-keywords-1)
+           (if (member (org-get-todo-state) org-done-keywords)
+               (let* ((daynr (string-to-int (format-time-string "%d" (current-time))))
+                      (a-month-ago (* 60 60 24 (+ daynr 1)))
+                      (last-month (format-time-string "%Y-%m-" (time-subtract (current-time) (seconds-to-time a-month-ago))))
+                      (this-month (format-time-string "%Y-%m-" (current-time)))
+                      (subtree-is-current (save-excursion
+                                            (forward-line 1)
+                                            (and (< (point) subtree-end)
+                                                 (re-search-forward (concat last-month "\\|" this-month) subtree-end t)))))
+                 (if subtree-is-current
+                     subtree-end ; Has a date in this month or last month, skip it
+                   nil))  ; available to archive
+             (or subtree-end (point-max)))
+         next-headline))))
+ #+END_SRC
 ** Org babel
 #+BEGIN_SRC emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)))
-(require 'ob-python)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t) (lisp . t)))
+  (require 'ob-python)
 
-;; Use syntax highlighting in source blocks while editing
-(setq org-src-fontify-natively t)
-
-;;Enable spell-check in org mode
-(add-hook 'org-mode-hook 'flyspell-mode)
+  ;; Use syntax highlighting in source blocks while editing
+  (setq org-src-fontify-natively t)
 #+END_SRC
 ** Export
 #+BEGIN_SRC emacs-lisp
 (require 'ox-md)
 #+END_SRC
-;;* Sensible defaults
-** Utility functions
+* Sensible defaults
 #+BEGIN_SRC emacs-lisp
-(defun sensible-defaults/comment-or-uncomment-region-or-line ()
-  "Comments or uncomments the region or the current line if
-there's no active region."
-  (interactive)
-  (let (beg end)
-    (if (region-active-p)
-        (setq beg (region-beginning) end (region-end))
-      (setq beg (line-beginning-position) end (line-end-position)))
-    (comment-or-uncomment-region beg end)))
+  (defun sensible-defaults/comment-or-uncomment-region-or-line ()
+    "Comments or uncomments the region or the current line if
+  there's no active region."
+    (interactive)
+    (let (beg end)
+      (if (region-active-p)
+	  (setq beg (region-beginning) end (region-end))
+	(setq beg (line-beginning-position) end (line-end-position)))
+      (comment-or-uncomment-region beg end)))
 
-(defun sensible-defaults/reset-text-size ()
-  (interactive)
-  (text-scale-set 0))
+  (defun sensible-defaults/reset-text-size ()
+    (interactive)
+    (text-scale-set 0))
 
-(defun toggle-window-split ()
- "Automatically splits the window vertically if the buffer is taller than
-  it is wider."
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
+  (defun toggle-window-split ()
+   "Automatically splits the window vertically if the buffer is taller than
+    it is wider."
+    (interactive)
+    (if (= (count-windows) 2)
+	(let* ((this-win-buffer (window-buffer))
+	       (next-win-buffer (window-buffer (next-window)))
+	       (this-win-edges (window-edges (selected-window)))
+	       (next-win-edges (window-edges (next-window)))
+	       (this-win-2nd (not (and (<= (car this-win-edges)
+					   (car next-win-edges))
+				       (<= (cadr this-win-edges)
+					   (cadr next-win-edges)))))
+	       (splitter
+		(if (= (car this-win-edges)
+		       (car (window-edges (next-window))))
+		    'split-window-horizontally
+		  'split-window-vertically)))
+	  (delete-other-windows)
+	  (let ((first-win (selected-window)))
+	    (funcall splitter)
+	    (if this-win-2nd (other-window 1))
+	    (set-window-buffer (selected-window) this-win-buffer)
+	    (set-window-buffer (next-window) next-win-buffer)
+	    (select-window first-win)
+	    (if this-win-2nd (other-window 1))))))
 
+    (setq ring-bell-function 'ignore)
+
+     (defun sensible-defaults/open-files-from-home-directory ()
+       "When opening a file, start searching at the user's home
+     directory."
+       (setq default-directory "~/"))
+
+     (defun sensible-defaults/increase-gc-threshold ()
+       "Allow 20MB of memory (instead of 0.76MB) before calling
+     garbage collection. This means GC runs less often, which speeds
+     up some operations."
+       (setq gc-cons-threshold 20000000))
+
+     (defun sensible-defaults/delete-trailing-whitespace ()
+       "Call DELETE-TRAILING-WHITESPACE every time a buffer is saved."
+       (add-hook 'before-save-hook 'delete-trailing-whitespace))
+
+     (defun sensible-defaults/treat-camelcase-as-separate-words ()
+       "Treat CamelCaseSubWords as separate words in every programming
+     mode."
+       (add-hook 'prog-mode-hook 'subword-mode))
+
+     (defun sensible-defaults/automatically-follow-symlinks ()
+       "When opening a file, always follow symlinks."
+       (setq vc-follow-symlinks t))
+
+     (defun sensible-defaults/make-scripts-executable ()
+       "When saving a file that starts with `#!', make it executable."
+       (add-hook 'after-save-hook
+		 'executable-make-buffer-file-executable-if-script-p))
+
+     (defun sensible-defaults/single-space-after-periods ()
+       "Don't assume that sentences should have two spaces after
+     periods. This ain't a typewriter."
+       (setq sentence-end-double-space nil))
+
+     (defun sensible-defaults/offer-to-create-parent-directories-on-save ()
+       "When saving a file in a directory that doesn't exist, offer
+     to (recursively) create the file's parent directories."
+       (add-hook 'before-save-hook
+		 (lambda ()
+		   (when buffer-file-name
+		     (let ((dir (file-name-directory buffer-file-name)))
+		       (when (and (not (file-exists-p dir))
+				  (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
+			 (make-directory dir t)))))))
+
+     (defun sensible-defaults/apply-changes-to-highlighted-region ()
+       "Turn on transient-mark-mode."
+       (transient-mark-mode t))
+
+     (defun sensible-defaults/overwrite-selected-text ()
+       "If some text is selected, and you type some text, delete the
+     selected text and start inserting your typed text."
+       (delete-selection-mode t))
+
+     (defun sensible-defaults/ensure-that-files-end-with-newline ()
+       "If you save a file that doesn't end with a newline,
+     automatically append one."
+       (setq require-final-newline t))
+
+     (defun sensible-defaults/confirm-closing-emacs ()
+       "Ask if you're sure that you want to close Emacs."
+       (setq confirm-kill-emacs 'y-or-n-p))
+
+     (defun sensible-defaults/quiet-startup ()
+       "Don't present the usual startup message, and clear the scratch
+     buffer."
+       (setq inhibit-startup-message t)
+       (setq initial-scratch-message nil))
+
+     (defun sensible-defaults/make-dired-file-sizes-human-readable ()
+       "Add file sizes in human-readable units (KB, MB, etc) to dired
+     buffers."
+       (setq-default dired-listing-switches "-alh"))
+
+     (defun sensible-defaults/shorten-yes-or-no ()
+       "Don't ask `yes/no?', ask `y/n?'."
+       (fset 'yes-or-no-p 'y-or-n-p))
+
+     (defun sensible-defaults/always-highlight-code ()
+       "Turn on syntax highlighting whenever possible."
+       (global-font-lock-mode t))
+
+     (defun sensible-defaults/refresh-buffers-when-files-change ()
+       "When something changes a file, automatically refresh the
+     buffer containing that file so they can't get out of sync."
+       (global-auto-revert-mode t))
+
+     (defun sensible-defaults/show-matching-parens ()
+       "Visually indicate matching pairs of parentheses."
+       (show-paren-mode t)
+       (setq show-paren-delay 0.0))
+
+     (defun sensible-defaults/flash-screen-instead-of-ringing-bell ()
+       "When you perform a problematic operation, flash the screen
+     instead of ringing the terminal bell."
+       (setq visible-bell nil))
+
+     (defun sensible-defaults/set-default-line-length-to (line-length)
+       "Set the default line length to LINE-LENGTH."
+       (setq-default fill-column line-length))
+
+     (defun sensible-defaults/open-clicked-files-in-same-frame-on-mac ()
+       "When you double-click on a file in the Mac Finder open it as a
+     buffer in the existing Emacs frame, rather than creating a new
+     frame just for that file."
+       (setq ns-pop-up-frames nil))
+
+     (defun sensible-defaults/yank-to-point-on-mouse-click ()
+       "When middle-clicking the mouse to yank from the clipboard,
+     insert the text where point is, not where the mouse cursor is."
+       (setq mouse-yank-at-point t))
+
+     (defun sensible-defaults/add-line-mode ()
+       "Add line numbers in all buffers by default"
+       (add-hook 'global-linum-mode t))
+
+     (defun sensible-defaults/electric-pair-mode ()
+       "Enable electric pair mode by default"
+       (setq electric-pair-mode t))
+
+     (defun sensible-defaults/use-all-settings ()
+       "Use all of the sensible-defaults settings."
+       (sensible-defaults/open-files-from-home-directory)
+       (sensible-defaults/increase-gc-threshold)
+       (sensible-defaults/delete-trailing-whitespace)
+       (sensible-defaults/treat-camelcase-as-separate-words)
+       (sensible-defaults/automatically-follow-symlinks)
+       (sensible-defaults/make-scripts-executable)
+       (sensible-defaults/single-space-after-periods)
+       (sensible-defaults/offer-to-create-parent-directories-on-save)
+       (sensible-defaults/apply-changes-to-highlighted-region)
+       (sensible-defaults/overwrite-selected-text)
+       (sensible-defaults/ensure-that-files-end-with-newline)
+       (sensible-defaults/confirm-closing-emacs)
+       (sensible-defaults/quiet-startup)
+       (sensible-defaults/make-dired-file-sizes-human-readable)
+       (sensible-defaults/shorten-yes-or-no)
+       (sensible-defaults/always-highlight-code)
+       (sensible-defaults/refresh-buffers-when-files-change)
+       (sensible-defaults/show-matching-parens)
+       (sensible-defaults/flash-screen-instead-of-ringing-bell)
+       (sensible-defaults/set-default-line-length-to 80)
+       (sensible-defaults/open-clicked-files-in-same-frame-on-mac)
+       (sensible-defaults/yank-to-point-on-mouse-click)
+       (sensible-defaults/add-line-mode)
+       (sensible-defaults/electric-pair-mode))
 #+END_SRC
-** Settings
 #+BEGIN_SRC emacs-lisp
-;;Disable the bell sound
-(setq ring-bell-function 'ignore)
+    (sensible-defaults/use-all-settings)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(defun sensible-defaults/open-files-from-home-directory ()
-  "When opening a file, start searching at the user's home
-directory."
-  (setq default-directory "~/"))
-
-(defun sensible-defaults/increase-gc-threshold ()
-  "Allow 20MB of memory (instead of 0.76MB) before calling
-garbage collection. This means GC runs less often, which speeds
-up some operations."
-  (setq gc-cons-threshold 20000000))
-
-(defun sensible-defaults/delete-trailing-whitespace ()
-  "Call DELETE-TRAILING-WHITESPACE every time a buffer is saved."
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
-
-(defun sensible-defaults/treat-camelcase-as-separate-words ()
-  "Treat CamelCaseSubWords as separate words in every programming
-mode."
-  (add-hook 'prog-mode-hook 'subword-mode))
-
-(defun sensible-defaults/automatically-follow-symlinks ()
-  "When opening a file, always follow symlinks."
-  (setq vc-follow-symlinks t))
-
-(defun sensible-defaults/make-scripts-executable ()
-  "When saving a file that starts with `#!', make it executable."
-  (add-hook 'after-save-hook
-            'executable-make-buffer-file-executable-if-script-p))
-
-(defun sensible-defaults/single-space-after-periods ()
-  "Don't assume that sentences should have two spaces after
-periods. This ain't a typewriter."
-  (setq sentence-end-double-space nil))
-
-(defun sensible-defaults/offer-to-create-parent-directories-on-save ()
-  "When saving a file in a directory that doesn't exist, offer
-to (recursively) create the file's parent directories."
-  (add-hook 'before-save-hook
-            (lambda ()
-              (when buffer-file-name
-                (let ((dir (file-name-directory buffer-file-name)))
-                  (when (and (not (file-exists-p dir))
-                             (y-or-n-p (format "Directory %s does not exist. Create it?" dir)))
-                    (make-directory dir t)))))))
-
-(defun sensible-defaults/apply-changes-to-highlighted-region ()
-  "Turn on transient-mark-mode."
-  (transient-mark-mode t))
-
-(defun sensible-defaults/overwrite-selected-text ()
-  "If some text is selected, and you type some text, delete the
-selected text and start inserting your typed text."
-  (delete-selection-mode t))
-
-(defun sensible-defaults/ensure-that-files-end-with-newline ()
-  "If you save a file that doesn't end with a newline,
-automatically append one."
-  (setq require-final-newline t))
-
-(defun sensible-defaults/confirm-closing-emacs ()
-  "Ask if you're sure that you want to close Emacs."
-  (setq confirm-kill-emacs 'y-or-n-p))
-
-(defun sensible-defaults/quiet-startup ()
-  "Don't present the usual startup message, and clear the scratch
-buffer."
-  (setq inhibit-startup-message t)
-  (setq initial-scratch-message nil))
-
-(defun sensible-defaults/make-dired-file-sizes-human-readable ()
-  "Add file sizes in human-readable units (KB, MB, etc) to dired
-buffers."
-  (setq-default dired-listing-switches "-alh"))
-
-(defun sensible-defaults/shorten-yes-or-no ()
-  "Don't ask `yes/no?', ask `y/n?'."
-  (fset 'yes-or-no-p 'y-or-n-p))
-
-(defun sensible-defaults/always-highlight-code ()
-  "Turn on syntax highlighting whenever possible."
-  (global-font-lock-mode t))
-
-(defun sensible-defaults/refresh-buffers-when-files-change ()
-  "When something changes a file, automatically refresh the
-buffer containing that file so they can't get out of sync."
-  (global-auto-revert-mode t))
-
-(defun sensible-defaults/show-matching-parens ()
-  "Visually indicate matching pairs of parentheses."
-  (show-paren-mode t)
-  (setq show-paren-delay 0.0))
-
-(defun sensible-defaults/flash-screen-instead-of-ringing-bell ()
-  "When you perform a problematic operation, flash the screen
-instead of ringing the terminal bell."
-  (setq visible-bell nil))
-
-(defun sensible-defaults/set-default-line-length-to (line-length)
-  "Set the default line length to LINE-LENGTH."
-  (setq-default fill-column line-length))
-
-(defun sensible-defaults/open-clicked-files-in-same-frame-on-mac ()
-  "When you double-click on a file in the Mac Finder open it as a
-buffer in the existing Emacs frame, rather than creating a new
-frame just for that file."
-  (setq ns-pop-up-frames nil))
-
-(defun sensible-defaults/yank-to-point-on-mouse-click ()
-  "When middle-clicking the mouse to yank from the clipboard,
-insert the text where point is, not where the mouse cursor is."
-  (setq mouse-yank-at-point t))
-
-(defun sensible-defaults/add-line-mode ()
-  "Add line numbers in all buffers by default"
-  (add-hook 'global-linum-mode t))
-
-(defun sensible-defaults/electric-pair-mode ()
-  "Enable electric pair mode by default"
-  (setq electric-pair-mode t))
-
-(defun sensible-defaults/use-all-settings ()
-  "Use all of the sensible-defaults settings."
-  (sensible-defaults/open-files-from-home-directory)
-  (sensible-defaults/increase-gc-threshold)
-  (sensible-defaults/delete-trailing-whitespace)
-  (sensible-defaults/treat-camelcase-as-separate-words)
-  (sensible-defaults/automatically-follow-symlinks)
-  (sensible-defaults/make-scripts-executable)
-  (sensible-defaults/single-space-after-periods)
-  (sensible-defaults/offer-to-create-parent-directories-on-save)
-  (sensible-defaults/apply-changes-to-highlighted-region)
-  (sensible-defaults/overwrite-selected-text)
-  (sensible-defaults/ensure-that-files-end-with-newline)
-  (sensible-defaults/confirm-closing-emacs)
-  (sensible-defaults/quiet-startup)
-  (sensible-defaults/make-dired-file-sizes-human-readable)
-  (sensible-defaults/shorten-yes-or-no)
-  (sensible-defaults/always-highlight-code)
-  (sensible-defaults/refresh-buffers-when-files-change)
-  (sensible-defaults/show-matching-parens)
-  (sensible-defaults/flash-screen-instead-of-ringing-bell)
-  (sensible-defaults/set-default-line-length-to 80)
-  (sensible-defaults/open-clicked-files-in-same-frame-on-mac)
-  (sensible-defaults/yank-to-point-on-mouse-click)
-  (sensible-defaults/add-line-mode)
-  (sensible-defaults/electric-pair-mode))
-#+END_SRC
-** Keybindings
+* Keybindings
 #+BEGIN_SRC emacs-lisp
 (defun sensible-defaults/bind-commenting-and-uncommenting ()
   "Comment or uncomment a region by hitting M-;."
@@ -664,67 +589,86 @@ respectively."
   (sensible-defaults/bind-commenting-and-uncommenting)
   (sensible-defaults/bind-home-and-end-keys)
   (sensible-defaults/bind-keys-to-change-text-size))
-#+END_SRC
-** Setting backup location and policies
-#+BEGIN_SRC emacs-lisp
-(defvar --backup-directory (concat user-emacs-directory "backups"))
-  "Sets the backup directory and if one is not created, creates the directory.
- Also, sets the backup frequency, number of backups, versions, etc."
-(if (not (file-exists-p --backup-directory))
-        (make-directory --backup-directory t))
-(setq backup-directory-alist `(("." . ,--backup-directory)))
-(setq make-backup-files t               ; backup of a file the first time it is saved.
-      backup-by-copying t               ; don't clobber symlinks
-      version-control t                 ; version numbers for backup files
-      delete-old-versions t             ; delete excess backup files silently
-      delete-by-moving-to-trash t
-      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
-      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
-      auto-save-default t               ; auto-save every buffer that visits a file
-      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
-      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
-      )
-#+END_SRC
 
-
-#+BEGIN_SRC emacs-lisp
-(sensible-defaults/use-all-settings)
-(sensible-defaults/use-all-keybindings)
-#+END_SRC
-** Easy-to-add emacs-lisp templates
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'org-structure-template-alist
-	       '("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
-#+END_SRC
-* Command line configurations
-Added to open emacs UI from the CL
-#+BEGIN_SRC emacs-lisp
-(x-focus-frame nil)
+ (sensible-defaults/use-all-keybindings)
 #+END_SRC
 * Utility functions
 #+BEGIN_SRC emacs-lisp
-(defun ls/view-buffer-name ()
-  "Display the filename of the current buffer."
-  (interactive)
-  (message (buffer-file-name)))
+    (defun ls/view-buffer-name ()
+      "Display the filename of the current buffer."
+      (interactive)
+      (message (buffer-file-name)))
 
-(defun ls/insert-random-string (len)
-  "Insert a random alphanumeric string of length len."
-  (interactive)
-  (leg ((mycharset "1234567890ABCDEFGHIJKLMNOPQRTSUVWXYZabcdefghijklmnopqrstuvwxyz"))
-    (dotimes (i len)
-      (insert (elt mycharset (random (length mycharset)))))))
+    (defun ls/insert-random-string (len)
+      "Insert a random alphanumeric string of length len."
+      (interactive)
+      (leg ((mycharset "1234567890ABCDEFGHIJKLMNOPQRTSUVWXYZabcdefghijklmnopqrstuvwxyz"))
+	(dotimes (i len)
+	  (insert (elt mycharset (random (length mycharset)))))))
 
-(defun ls/generate-password ()
-  "Insert a good alphanumeric password of length 30."
-  (interative)
-  (ls/insert-random-string 30))
+    (defun ls/generate-password ()
+      "Insert a good alphanumeric password of length 30."
+      (interative)
+      (ls/insert-random-string 30))
 
-(defun kill-current-buffer ()
-  "Kill the current buffer without prompting."
-  (interactive)
-  (kill-buffer (current-buffer)))
+    (defun kill-current-buffer ()
+      "Kill the current buffer without prompting."
+      (interactive)
+      (kill-buffer (current-buffer)))
+
+      (defun ls/copy-tasks-from-inbox ()
+	"Moves the contents of the Inbox.org file to Main.org"
+	(interactive)
+	 (when (file-exists-p org-default-notes-file)
+	  (save-excursion
+	    (find-file "~/Dropbox/org-files/Main.org")
+	    (goto-char (point-max))
+	    (insert-file-contents org-default-notes-file)
+	    (find-file org-default-notes-file)
+	    (erase-buffer)
+	    (save-buffer)
+	    (kill-buffer))))
+
+    (defun ls/kill-other-buffers ()
+      "Kill all buffers but the current one.
+    Doesn't mess with special buffers."
+      (interactive)
+      (when (y-or-n-p "Are you sure you want to kill all buffers but the current one? ")
+	(seq-each
+	 #'kill-buffer
+	 (delete (current-buffer) (seq-filter #'buffer-file-name (buffer-list))))))
+
+    (defun ls/create-scratch-buffer ()
+      "Create a new scratch buffer."
+      (interactive)
+      (let ((buf (generate-new-buffer "*scratch*")))
+	(switch-to-buffer buf)
+	(funcall initial-major-mode)))
+
+  (defun ls/find-user-init-file ()
+    "Edit the `user-init-file', in another window."
+    (interactive)
+    (find-file-other-window user-init-file))
+
+  (defun ls/transpose-windows (arg)
+    "Transpose the buffers shown in two windows.
+  Prefix ARG determines if the current windows buffer is swapped
+  with the next or previous window, and the number of
+  transpositions to execute in sequence."
+    (interactive "p")
+    (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
+      (while (/= arg 0)
+	(let ((this-win (window-buffer))
+	      (next-win (window-buffer (funcall selector))))
+	  (set-window-buffer (selected-window) next-win)
+	  (set-window-buffer (funcall selector) this-win)
+	  (select-window (funcall selector)))
+	(setq arg (if (cl-plusp arg) (1- arg) (1+ arg))))))
 #+END_SRC
+
+#+RESULTS:
+: ls/transpose-windows
+
 * Fonts
 ** Font: Source Code Pro 14
 #+BEGIN_SRC emacs-lisp
@@ -832,15 +776,26 @@ Simply press C-c r to reload the config file.
 (global-set-key "\C-s" 'swiper)
 #+END_SRC
 * Autocomplete settings
-** org-mode autocomplete
-#+BEGIN_SRC emacs-lisp
-(require 'org-ac)
-#+END_SRC
-** auto-complete
 #+BEGIN_SRC emacs-lisp
 (require 'auto-complete)
 (ac-config-default)
 (global-auto-complete-mode t)
+(require 'org-ac)
+(add-to-list 'ac-modes 'org-mode)
+#+END_SRC
+* Auto-complete and ispell
+#+BEGIN_SRC emacs-lisp
+;; Completion words longer than 4 characters
+(custom-set-variables
+  '(ac-ispell-requires 4)
+  '(ac-ispell-fuzzy-limit 2))
+
+(eval-after-load "auto-complete"
+  '(progn
+      (ac-ispell-setup)))
+
+(add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
+(add-hook 'mail-mode-hook 'ac-ispell-ac-setup)
 #+END_SRC
 * UI settings
 ** Highlight the current line
@@ -864,7 +819,6 @@ Simply press C-c r to reload the config file.
 
 ;; Opens emacs to fullscreen mode
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
 #+END_SRC
 ** Scroll conservatively
 #+BEGIN_SRC emacs-lisp
@@ -876,34 +830,36 @@ Simply press C-c r to reload the config file.
   (interactive)
   (org-tree-to-indirect-buffer)
   (windmove-right))
-
-;;(add-hook 'org-mode-hook
-
-;;          (lambda ()
-
-            ;; TODO: set fringe/gutter mode and theme by mode, no fringe and white them for ORG files
-            ;; fringe and black theme for code
-;;            (fringe-mode 0)
-
-            ;; (set-frame-parameter (window-frame) 'background-mode 'dark)
-            ;; (enable-theme 'leuven)
-
-;;            (global-set-key (kbd "C-x return") (quote org-tree-open-in-right-frame)
-;;            (global-set-key (kbd "C-x S-return") (quote org-tree-to-indirect-buffer))
-;;            (local-set-key [3 25] 'org-copy-subtree))
-;;)
+#+END_SRC
+** Move region or subtree to other window
+#+BEGIN_SRC emacs-lisp
+(defun move-region-or-subtree-to-other-window ()
+  (interactive)
+  (when (and
+         (eq 'org-mode major-mode)
+         (not (region-active-p)))
+    (org-mark-subtree))
+  (call-interactively 'org-tree-to-indirect-buffer))
 #+END_SRC
 ** Spaceline
 #+BEGIN_SRC emacs-lisp
-(use-package spaceline
-  :ensure t
-  :config
-  (require 'spaceline-config)
-    (setq spaceline-buffer-encoding-abbrev-p nil)
-    (setq spaceline-line-column-p nil)
-    (setq spaceline-line-p nil)
-    (setq powerline-default-separator (quote arrow))
-    (spaceline-spacemacs-theme))
+    (use-package spaceline
+      :ensure t
+      :config
+      (require 'spaceline-config)
+      (spaceline-helm-mode 1)
+      (setq spaceline-buffer-encoding-abbrev-p nil)
+      (setq spaceline-line-column-p nil)
+      (setq spaceline-line-p nil)
+      (setq powerline-default-separator (quote arrow))
+      (spaceline-spacemacs-theme))
+
+  (use-package all-the-icons)
+
+  (use-package spaceline-all-the-icons
+    :after spaceline
+    :config (spaceline-all-the-icons-theme))
+
 #+END_SRC
 ** Clock
 *** Time format
@@ -924,6 +880,10 @@ Simply press C-c r to reload the config file.
       (display-battery-mode)))
 #+END_SRC
 * Programming customizations
+** Paredit
+#+BEGIN_SRC emacs-lisp
+(require 'paredit)
+#+END_SRC
 ** Emacs-lisps
 #+BEGIN_SRC emacs-lisp
 (setq compilation-scroll-output t)
@@ -982,6 +942,29 @@ Simply press C-c r to reload the config file.
 (ad-activate 'ansi-term)
 (global-set-key (kbd "<s-return>") 'ansi-term)
 #+END_SRC
+** Rainbows
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
+** SLIME
+#+BEGIN_SRC emacs-lisp
+  (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
+  (require 'ac-slime)
+  (add-hook 'slime-mode-hook 'set-up-slime-ac)
+  (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
+  (eval-after-load "auto-complete"
+    '(add-to-list 'ac-modes 'slime-repl-mode))
+#+END_SRC
+** Clojure
+#+BEGIN_SRC emacs-lisp
+(use-package cider
+  :ensure t
+  :init
+    (add-hook 'clojure-mode-hook #'cider-mode)
+  :config
+  (add-hook 'cider-mode-hook 'eldoc-mode)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+#+END_SRC
 * Editing settings
 ** Always kill current buffer
 Assume that I always want to kill the current buffer when hitting C-x k.
@@ -1033,26 +1016,14 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+END_SRC
 * Open my standard set of files
 #+BEGIN_SRC emacs-lisp
+(ls/copy-tasks-from-inbox)
 (find-file (concat org-directory "org-files/Main.org"))
 #+END_SRC
-* Emoji
-;;#+BEGIN_SRC emacs-lisp
-;;(add-hook 'after-init-hook 'global-emojify-mode)
-;;#+END_SRC
 * Yaml-mode
 #+BEGIN_SRC emacs-lisp
 (add-hook 'yaml-mode-hook
         (lambda ()
             (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-#+END_SRC
-* Mulitple Cursors
-#+BEGIN_SRC emacs-lisp
-(require 'multiple-cursors)
-
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 #+END_SRC
 * Helm configurations
 #+BEGIN_SRC emacs-lisp
@@ -1071,15 +1042,7 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+END_SRC
 * Magit
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x g") 'magit-status)
-#+END_SRC
-* Misc
-#+BEGIN_SRC emacs-lisp
-;;No need for ~ files when editing
-(setq create-lockfiles nil)
-#+END_SRC
-#+BEGIN_SRC emacs-lisp
-(require 'xkcd)
+  (global-set-key (kbd "C-x g") 'magit-status)
 #+END_SRC
 * Auto-udpate packages
 #+BEGIN_SRC emacs-lisp
@@ -1088,38 +1051,9 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 (setq auto-package-update-prompt-before-update t)
 (setq auto-package-update-delete-old-versions t)
 #+END_SRC
-* Elfeed setup
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x w") 'elfeed)
-
-(setq-default elfeed-search-filter "@1-week-ago +unread ")
-
-;; Entries older than 2 weeks are marked as read
-(add-hook 'elfeed-new-entry-hook
-          (elfeed-make-tagger :before "2 weeks ago"
-                              :remove 'unread))
-;; Feeds
-(setq elfeed-feeds
-      '("http://nullprogram.com/feed/"
-        "http://planet.emacsen.org/atom.xml"
-	"http://r3cev.com/feed/"
-	"http://markmanson.net/feed"
-	"http://endlessparentheses.com/atom.xml"
-	"http://rss.mckinseyquarterly.com/ad"
-	"http://feeds.harvardbusiness.org/harvardbusiness/"
-))
-#+END_SRC
-* Neotree config
-#+BEGIN_SRC emacs-lisp
-(add-hook 'after-init-hook 'neotree-show)
-#+END_SRC
-* Popwin config
-#+BEGIN_SRC emacs-lisp
-(require 'popwin)
-(popwin-mode 1)
-#+END_SRC
 * PDF Tools config
 #+BEGIN_SRC emacs-lisp
+;;(pdf-tools-install)
 (use-package pdf-tools
  :pin manual ;; manually update
  :config
@@ -1136,29 +1070,9 @@ Assume that I always want to kill the current buffer when hitting C-x k.
  ;; keyboard shortcuts
  (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
  (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
- (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
-#+END_SRC
-* Auto-complete and ispell
-#+BEGIN_SRC emacs-lisp
-;; Completion words longer than 4 characters
-(custom-set-variables
-  '(ac-ispell-requires 4)
-  '(ac-ispell-fuzzy-limit 2))
-
-(eval-after-load "auto-complete"
-  '(progn
-      (ac-ispell-setup)))
-
-(add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
-(add-hook 'mail-mode-hook 'ac-ispell-ac-setup)
+ (defineq-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
 #+END_SRC
 * Text Manipulation
-** Multiple cursors
-#+BEGIN_SRC emacs-lisp
-(use-package multiple-cursors
-  :ensure t)
-(global-set-key "\C-q" 'mark-next-like-this)
-#+END_SRC
 ** Improved kill-word
 #+BEGIN_SRC emacs-lisp
 (defun ls/kill-inner-word ()
@@ -1192,3 +1106,76 @@ Assume that I always want to kill the current buffer when hitting C-x k.
       (point-at-eol)))))
 (global-set-key (kbd "C-c l") 'ls/copy-whole-line)
 #+END_SRC
+* Custom themes
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'custom-theme-load-path "~/.emacs.d/blackboard-theme")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-planet-theme")
+#+END_SRC
+* Pomidor
+#+BEGIN_SRC emacs-lisp
+(use-package pomidor
+  :ensure t)
+#+END_SRC
+* Open new buffer as org-mode sub-tree in current file
+#+BEGIN_SRC emacs-lisp
+;;(defun org-new-scratch-buffer ()
+;;  (interactive)
+;;  (insert "* oh hi there! " (format-time-string "%F %l:%M%P\n\n"))
+;;  (org-narrow-to-subtree))
+#+END_SRC
+* Captain
+#+BEGIN_SRC emacs-lisp
+(add-hook 'after-init-hook 'global-captain-mode)
+
+;; tell the captail to only work on comments in programming modes
+(add-hook 'prog-mode-hook
+   (lambda ()
+     (setq captain-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
+
+;; for text modes, work all the time
+(add-hook 'text-mode-hook
+          (lambda ()
+            (setq captain-predicate (lambda () t))))
+
+;; don't work in source blocks in org mode
+(add-hook
+ 'org-mode-hook
+ (lambda ()
+   (setq captain-predicate
+         (lambda () (not (org-in-src-block-p))))))
+#+END_SRC
+* BBDB
+#+BEGIN_SRC emacs-lisp
+;;(require 'bbdb-loaddefs "~/.emacs.d/elpa/bbdb-3.2/bbdb-loaddefs.el")
+#+END_SRC
+* Misc
+#+BEGIN_SRC emacs-lisp
+;;No need for ~ files when editing
+(setq create-lockfiles nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+(require 'nnir)
+(require 'xkcd)
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+#+END_SRC
+* Projectile
+#+BEGIN_SRC emacs-lisp
+;; use helm-projectile insted of regular projectile
+(require 'helm-projectile)
+(helm-projectile-on)
+#+END_SRC
+* Custom functions
+#+BEGIN_SRC emacs-lisp
+  (defun ls/kill-org-buffers ()
+      "Kills all open org buffers. Will be hooked into after executing org agenda"
+    (interactive)
+    (kill-some-buffers (remove-if-not '(lambda (x) (with-current-buffer x (eq major-mode 'org-mode))) (buffer-list))))
+#+END_SRC
+* Image+
+#+BEGIN_SRC emacs-lisp
+  (eval-after-load 'image '(require 'image+))
+
+  (eval-after-load 'image+ '(imagex-global-sticky-mode 1))
+#+END_SRC
+*
