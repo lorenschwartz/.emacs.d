@@ -12,17 +12,6 @@
      calendar-location-name "Vaughan, ON")
 (setq calendar-daylight-time-zone-name "EST")
 #+END_SRC
-* Custom Key Bindings
-#+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f12>") 'ls/org-agenda)
-(global-set-key (kbd "M-s") 'save-buffer)
-(global-set-key (kbd "M-z") 'undo)
-(global-set-key (kbd "<f6>") 'split-window-horizontally)
-(global-set-key (kbd "<f7>") 'split-window-vertically)
-(global-set-key (kbd "<f8>") 'delete-window)
-(setq mac-command-modifier 'meta); make Command keys do Meta
-(setq mac-option-modifier 'super); make Option keys do Super
-#+END_SRC
 * Org mode defaults
 ** Basic org-mode setup
 #+BEGIN_SRC emacs-lisp
@@ -37,10 +26,13 @@
       '(org-default-notes-file (concat org-directory "org-files/Inbox.org"))
       '(org-index-file (concat org-directory "org-files/Main.org"))
       '(org-startup-truncated t)
-      '(org-agenda-span 5)
+      '(org-agenda-start-on-weekday t)
+      '(org-ellipsis "⤵")
+      '(org-agenda-span 1)
       '(org-deadline-warning-days 7)
       '(org-agenda-show-all-dates t)
       '(org-agenda-skip-deadline-if-done t)
+      '(org-agenda-skip-unavailable-files t)
       '(org-agenda-start-on-weekday t)
       '(org-reverse-note-order t)
       '(org-agenda-include-diary t)
@@ -48,6 +40,10 @@
       '(org-src-fontify-natively t)
       '(org-src-tabs-act-natively t)
       '(org-src-window-setup 'current-window)
+      '(org-agenda-ndays 7)
+      '(org-agenda-restore-windows-after-quit t)
+      '(org-archive-location "%s_archive::datetree/*")
+      '(org-fast-tag-selection-single-key (quote expert))
       '(org-confirm-babel-evaluate nil))
 
     (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\|taskpaper\\)$" . org-mode))
@@ -75,38 +71,40 @@
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
     '(("t" "todo with date" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-       "* TODO %? %^g\n %U\n SCHEDULED:%^t\n")
+       "* TODO %? %^G\n SCHEDULED:%^t\n")
       ("d" "todo with deadline" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-       "* TODO %? %^g\n %U\n DEADLINE:%^t\n")
+       "* TODO %? %^G\n DEADLINE:%^t\n")
       ("e" "todo no date" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-       "* TODO %? %^g\n %U\n")
+       "* TODO %? %^G\n")
       ("r" "Reg Update" entry (file+headline "~/Dropbox/org-files/Main.org" "Regulatory Updates")
        "* OPEN %? :Reg:\n %U\n")
     ("p" "project" entry (file+headline "~/Dropbox/org-files/Main.org" "Projects & Priorities")
-    "* NEW %?\n %U\n")
+    "** NEW %?\n")
     ("n" "note" entry (file+headline "~/Dropbox/org-files/Main.org" "Notes & Links")
-    "* %?\n %U\n")
+     "** %?\n %U\n")
     ("i" "idea" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-    "* IDEA %?\n %U\n")
+    "** IDEA %?\n %^G\n")
     ("m" "minutes" entry (file+headline "~/Dropbox/org-files/Main.org" "Minutes")
-    "* MEETING %^{Title} %^T %^g\n %?\n")
-    ("o" "observation" entry (file+headline "~/Dropbox/org-files/Main.org" "Personal Observations")
-     "* %?\n %U\n")
+     "** MEETING %^{Title} %^T %^G\n %?\n")
+    ("j" "journal" entry (file+olp+datetree "~/Dropbox/org-files/Personal.org" "Journal")
+     "** %?")
+    ("o" "observation" entry (file+headline "~/Dropbox/org-files/Personal.org" "Personal Observations")
+     "** %?\n %U\n")
+    ("g" "goals" entry (file+headline "~/Dropbox/org-files/Personal.org" "Goals")
+     "** GOAL %?\n %^{AREA}p")
+    ("c" "contact" entry (file+headline "~/Dropbox/org-files/Personal.org" "Contacts")
+     "** %?\n %^{COMPANY}p %^{EMAIL}p %^{PHONE}p %^{LINKEDIN}p")
     ("a" "agenda" entry (file+headline "~/Dropbox/org-files/Main.org" "Inbox")
-    "* OPEN %? %^g\n %U\n %^g\n")))
+    "** OPEN %? %^G\n")))
 #+END_SRC
 ** Org TODO keywords
 #+BEGIN_SRC emacs-lisp
-(setq org-todo-keywords
-  '((sequence "TODO" "NEXT(n)" "DOING(!)" "|" "DONE(d)" "CANCELLED(X)")
-   (sequence "WAITING(w@/!)" "HOLD(h@/!)" "DELEGATED(D)" "|" "DONE")
-   (sequence "OPEN" "|" "CLOSED(l)")
-   (sequence "IDEA" "EVALUATE" "|" "ABANDON" "PURSUE")
-   (sequence "TO READ" "READING" "|" "DONE")
-   (sequence "RISK" "|" "RISK CLOSED")
-   (sequence "ISSUE" "|" "ISSUE RESOLVED")
-   (sequence "DEPENDENCY" "|" "DEPENDENCY CLOSED")
-   (sequence "NEW" "PLANNING(p@/!)" "EXECUTION-ON TIME(x!)" "EXECUTION-LATE(!)" "|" "COMPLETE(c)")))
+  (setq org-todo-keywords
+    '((sequence "TODO" "NEXT(n)" "DOING(!)" "WAITING(w@/!)" "HOLD(h@/!)" "DELEGATED(D)" "|" "DONE(d)" "CANCELLED(X)")
+     (sequence "OPEN(o)" "|" "CLOSED(l)")
+     (sequence "IDEA(i)" "|" "ABANDON")
+     (sequence "GOAL(g)" "|" "DONE")
+     (sequence "NEW" "PLANNING(p@/!)" "EXECUTION-ON TIME(x!)" "EXECUTION-LATE(!)" "|" "COMPLETE(c)")))
 #+END_SRC
 ** To-do state triggers
 #+BEGIN_SRC emacs-lisp
@@ -121,36 +119,80 @@
 #+END_SRC
 ** Org Agenda defaults
 #+BEGIN_SRC emacs-lisp
-	;; most of the following was copied from Aaron Bieber's blog [[https://blog.aaronbieber.com/2016/09/24/an-agenda-for-life-with-org-mode.html][here]]
-    (defun ls/org-skip-subtree-if-priority (priority)
-	"Skip an agenda subtree if it has a priority of PRIORITY.
-         PRIORITY may be one of the characters ?A, ?B, or ?C."
-	(let ((subtree-end (save-excursion (org-end-of-subtree t)))
-	      (pri-value (* 1000 (- org-lowest-priority priority)))
-	      (pri-current (org-get-priority (thing-at-point 'line t))))
-	  (if (= pri-value pri-current) subtree-end nil)))
+  ;;; Code:
+  (defun ls/org-skip-subtree-if-priority (priority)
+      "Skip an agenda subtree if it has a priority of PRIORITY.
+       PRIORITY may be one of the characters ?A, ?B, or ?C."
+      (let ((subtree-end (save-excursion (org-end-of-subtree t)))
+	    (pri-value (* 1000 (- org-lowest-priority priority)))
+	    (pri-current (org-get-priority (thing-at-point 'line t))))
+       (if (= pri-value pri-current) subtree-end nil)))
 
-    ;; (setq org-agenda-custom-commands
-    ;;   '(("c" "Work Custom Agenda View"
-    ;;       ((tags "PRIORITY=\"A\""
-    ;; 	    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-    ;; 	     (org-agenda-overriding-header "High Priority Items")))
-    ;;        (tags "PRIORITY=\"B\""
-    ;; 	   ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-    ;; 	    (org-agenda-overriding-header "Medium Priority Items")))
-    ;;        (tags "PRIORITY=\"C\""
-    ;; 	     ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-    ;; 	      (org-agenda-overriding-header "Low Priority Items")))
-    ;;        (agenda "")
-    ;;        (alltodo ""
-    ;; 	       ((org-agenda-skip-function
-    ;; 		 '(or (ls/org-skip-subtree-if-priority ?A)
-    ;; 		      (ls/org-skip-subtree-if-priority ?B)
-    ;; 		      (ls/org-skip-subtree-if-priority ?C)
-    ;; 		      (org-agenda-skip-entry-if '(scheduled deadline))
-    ;; 		      (org-agenda-skip-entry-if 'regexp ":RRSManagers::")
-    ;; 		      (org-agenda-skip-entry-if 'todo '("DELEGATED" "ISSUE" "DEPENDENCY" "NEW" "PLANNING" ;;"EX
-  ;;  ECUTION-ON TIME" "EXECUTION-LATE"))))))))))
+  (defun ls/org-skip-subtree-if-habit ()
+    "Skips entry it it has the habit style"
+    (let ((subtree-end (save-excursion (org-end-of-subtree t))))
+      (if (string= (org-entry-get nil "STYLE") "habit")
+	  subtree-end
+	nil)))
+
+  (setq org-agenda-custom-commands
+	'(("c1" "Priority Agenda View"
+	   ((tags "PRIORITY=\"A\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "High Priority Items")))
+	    (tags "PRIORITY=\"B\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "Medium Priority Items")))
+	    (tags "PRIORITY=\"C\""
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "Low Priority Items")))))
+	  ("c2" "Open Agenda View"
+	   ((todo "OPEN"
+		  ((org-agenda-sorting '(priority-down))
+		   (org-agenda-overriding-header "Open Agenda Items")))))
+	  ("c3" "Ideas"
+	   ((todo "IDEA"
+		  ((org-agenda-sorting '(priority-down))
+		   (org-agenda-overriding-header "Idea Incubator")))))
+	  ("c4" "Kanban Board Agenda View"
+	   ((agenda "")
+	    (todo "GOAL"
+		  ((org-agenda-sorting '(priority-down))
+		   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "Goals")))
+	    (todo "NEXT"
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'tags-todo "Goals"))
+		   (org-agenda-sorting '(priority-down))
+		   (org-agenda-overriding-header "Next Best Actions")))
+	    (todo "DOING"
+		  ((org-agenda-skip-function '(org-agenda-skip-entry-if 'tag-any-match-p '"Goals"))
+		   (org-agenda-sorting '(priority-down))
+		   (org-agenda-overriding-header "Doing")))
+	    (todo "OPEN|DELEGATED"
+		  ((org-agenda-sorting '(tag-down priority-down))
+		   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "For Follow Up")))
+	    (todo "WAITING|HOLD"
+		   ((org-agenda-sorting '(priority-down))
+		    (org-agenda-overriding-header "Stuck")))
+	    ;; (todo "DELEGATED"
+		  ;; ((org-agenda-sorting '(priority-down))
+		  ;;  (org-agenda-overriding-header "Delegated")))
+	    ;; (tags-todo "STYLE=\"habit\""
+		       ;; ((org-agenda-sorting '(priority-down))
+	    ;; (org-agenda-overriding-header "Habits")))
+	    (todo "IDEA"
+		  ((org-agenda-sorting '(tag-down priority-down))
+		   (org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+		   (org-agenda-overriding-header "The Incubator")))
+	    (alltodo ""
+		     ((org-agenda-skip-function
+		       '(or
+			 (org-agenda-skip-entry-if 'scheduled)
+			 (org-agenda-skip-entry-if 'deadline);;(org-agenda-skip-entry-if (ls/org-skip-subtree-if-habit))
+			 (org-agenda-skip-entry-if 'todo '("GOAL" "IDEA" "NEW" "PLANNING" "EXECUTION-ON TIME" "EXECUTION-LATE" "OPEN" "DOING" "NEXT" "WAITING" "HOLD" "DELEGATED"))))
+		      (org-agenda-overriding-header "All other tasks:"))))
+	   ((org-agenda-compact-blocks nil)))))
 
       ;; Keep tasks with dates on the global todo lists
       (setq org-agenda-todo-ignore-with-date nil)
@@ -186,37 +228,23 @@
 #+END_SRC
 ** Refile settings
 #+BEGIN_SRC emacs-lisp
-;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 9)
-                                 (org-agenda-files :maxlevel . 9))))
+  ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+  (setq org-refile-targets (quote ((nil :maxlevel . 4)
+				   (org-agenda-files :maxlevel . 4))))
 
-; Use full outline paths for refile targets - we file directly with IDO
-(setq org-refile-use-outline-path t)
+  ; Allow refile to create parent tasks with confirmation
+  (setq org-refile-allow-creating-parent-nodes (quote confirm))
 
-; Targets complete directly with IDO
-(setq org-outline-path-complete-in-steps nil)
+  ;; Use the other window for indirect buffer display
+  (setq org-indirect-buffer-display 'other-window)
 
-; Allow refile to create parent tasks with confirmation
-(setq org-refile-allow-creating-parent-nodes (quote confirm))
+  ;;;; Refile settings
+  ;; Exclude DONE state tasks from refile targets
+  (defun verify-refile-target ()
+    "Exclude todo keywords with a done state from refile targets"
+    (not (member (nth 2 (org-heading-components)) org-done-keywords)))
 
-;; Use IDO for both buffer and file completion and ido-everywhere to t
-(setq org-completion-use-ido t)
-(setq ido-everywhere t)
-(setq ido-max-directory-size 100000)
-(ido-mode (quote both))
-;; Use the current window when visiting files and buffers with ido
-(setq ido-default-file-method 'selected-window)
-(setq ido-default-buffer-method 'selected-window)
-;; Use the other window for indirect buffer display
-(setq org-indirect-buffer-display 'other-window)
-
-;;;; Refile settings
-;; Exclude DONE state tasks from refile targets
-(defun verify-refile-target ()
-  "Exclude todo keywords with a done state from refile targets"
-  (not (member (nth 2 (org-heading-components)) org-done-keywords)))
-
-(setq org-refile-target-verify-function 'verify-refile-target)
+  (setq org-refile-target-verify-function 'verify-refile-target)
 #+END_SRC
 ** Tags
 #+BEGIN_SRC emacs-lisp
@@ -267,14 +295,15 @@
 #+END_SRC
 ** Org babel
 #+BEGIN_SRC emacs-lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((python . t)))
-(require 'ob-python)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)
+;;     (js. t)
+))
 
-;; Use syntax highlighting in source blocks while editing
-(setq org-src-fontify-natively t)
-#+END_SRCq
+  (require 'ob-python)
+  (require 'ob-js)
+#+END_SRC
 ** Org-reveal
  #+BEGIN_SRC emacs-lisp
     (add-to-list 'load-path "~/org-reveal/")
@@ -561,36 +590,60 @@
 #+BEGIN_SRC emacs-lisp
     (sensible-defaults/use-all-settings)
 #+END_SRC
-
 * Keybindings
 #+BEGIN_SRC emacs-lisp
-(defun sensible-defaults/bind-commenting-and-uncommenting ()
-  "Comment or uncomment a region by hitting M-;."
-  (global-set-key (kbd "M-;")
-                  'sensible-defaults/comment-or-uncomment-region-or-line))
+  ;; Both command keys are 'Super'
+  (setq mac-right-command-modifier 'super)
+  (setq mac-command-modifier 'super)
 
-(defun sensible-defaults/bind-home-and-end-keys ()
-  "Make <home> and <end> move point to the beginning and end of
-the line, respectively."
-  (global-set-key (kbd "<home>") 'move-beginning-of-line)
-  (global-set-key (kbd "<end>") 'move-end-of-line))
+  ;; Option or Alt is 'Meta'
+  (setq mac-option-modifier 'meta)
 
-(defun sensible-defaults/bind-keys-to-change-text-size ()
-  "Bind C-+ and C-- to increase and decrease text size,
-respectively."
-  (define-key global-map (kbd "C-)") 'sensible-defaults/reset-text-size)
-  (define-key global-map (kbd "C-+") 'text-scale-increase)
-  (define-key global-map (kbd "C-=") 'text-scale-increase)
-  (define-key global-map (kbd "C-_") 'text-scale-decrease)
-  (define-key global-map (kbd "C--") 'text-scale-decrease))
+  ;; Right Alt (option) can be used to enter symbols like em dashes '-', etc.
+  (setq mac-right-option-modifier 'nil)
 
-(defun sensible-defaults/use-all-keybindings ()
-  "Use all of the sensible-defaults keybindings."
-  (sensible-defaults/bind-commenting-and-uncommenting)
-  (sensible-defaults/bind-home-and-end-keys)
-  (sensible-defaults/bind-keys-to-change-text-size))
+  ;; Use ESC as universal get me out of here command
+  (define-key key-translation-map (kbd "ESC")(kbd "C-g"))
 
- (sensible-defaults/use-all-keybindings)
+  ;; macOS type key bindings
+  (global-set-key (kbd "s-s") 'save-buffer)  ;; save
+  (global-set-key (kbd "s-S") 'write-file)   ;; save as
+  (global-set-key (kbd "s-q") 'save-buffers-kill-emacs) ;; quit
+  (global-set-key (kbd "s-a") 'mark-whole-buffer)  ;; select all
+  (global-set-key (kbd "s-z") 'undo) ;; undo
+
+  ;; My own keybindings
+  (global-set-key (kbd "<f6>") 'split-window-horizontally)
+  (global-set-key (kbd "<f7>") 'split-window-vertically)
+  (global-set-key (kbd "<f8>") 'delete-window)
+
+  (defun sensible-defaults/bind-commenting-and-uncommenting ()
+    "Comment or uncomment a region by hitting S-;."
+    (global-set-key (kbd "S-;")
+		    'sensible-defaults/comment-or-uncomment-region-or-line))
+
+  (defun sensible-defaults/bind-home-and-end-keys ()
+    "Make <home> and <end> move point to the beginning and end of
+  the line, respectively."
+    (global-set-key (kbd "<home>") 'move-beginning-of-line)
+    (global-set-key (kbd "<end>") 'move-end-of-line))
+
+  (defun sensible-defaults/bind-keys-to-change-text-size ()
+    "Bind C-+ and C-- to increase and decrease text size,
+  respectively."
+    (define-key global-map (kbd "C-)") 'sensible-defaults/reset-text-size)
+    (define-key global-map (kbd "C-+") 'text-scale-increase)
+    (define-key global-map (kbd "C-=") 'text-scale-increase)
+    (define-key global-map (kbd "C-_") 'text-scale-decrease)
+    (define-key global-map (kbd "C--") 'text-scale-decrease))
+
+  (defun sensible-defaults/use-all-keybindings ()
+    "Use all of the sensible-defaults keybindings."
+    (sensible-defaults/bind-commenting-and-uncommenting)
+    (sensible-defaults/bind-home-and-end-keys)
+    (sensible-defaults/bind-keys-to-change-text-size))
+
+   (sensible-defaults/use-all-keybindings)
 #+END_SRC
 * Utility functions
 #+BEGIN_SRC emacs-lisp
@@ -665,10 +718,6 @@ respectively."
 	  (select-window (funcall selector)))
 	(setq arg (if (cl-plusp arg) (1- arg) (1+ arg))))))
 #+END_SRC
-
-#+RESULTS:
-: ls/transpose-windows
-
 * Fonts
 ** Font: Source Code Pro 14
 #+BEGIN_SRC emacs-lisp
@@ -743,10 +792,73 @@ Simply press C-c r to reload the config file.
 (global-set-key (kbd "C-c r") 'config-reload)
 #+END_SRC
 ** Moving around Emacs
+*** Basic navigation
+#+BEGIN_SRC emacs-lisp
+  ;; Move around with Cmd+i/j/k/l.
+  (global-set-key (kbd "s-i") 'previous-line)
+  (global-set-key (kbd "s-k") 'next-line)
+  (global-set-key (kbd "s-j") 'left-char)
+  (global-set-key (kbd "s-l") 'right-char)
+
+  ;; Use Cmd for movement and selection.
+  (global-set-key (kbd "s-<right>") (kbd "C-e"))        ;; End of line
+  (global-set-key (kbd "S-s-<right>") (kbd "C-S-e"))    ;; Select to end of line
+  (global-set-key (kbd "s-<left>") (kbd "M-m"))         ;; Beginning of line (first non-whitespace character)
+  (global-set-key (kbd "S-s-<left>") (kbd "M-S-m"))     ;; Select to beginning of line
+
+  (global-set-key (kbd "s-<up>") 'beginning-of-buffer)  ;; First line
+  (global-set-key (kbd "s-<down>") 'end-of-buffer)      ;; Last line
+#+END_SRC
+*** Windows navigation
+#+BEGIN_SRC emacs-lisp
+  ;; When split is automatic, always split windows vertically
+  (setq split-height-threshold 0)
+  (setq split-width-threshold nil)
+
+  ;; Go to other windows easily with one keystroke Cmd-something.
+  (global-set-key (kbd "s-1") (kbd "C-x 1"))  ;; Cmd-1 kill other windows (keep 1)
+  (global-set-key (kbd "s-2") (kbd "C-x 2"))  ;; Cmd-2 split horizontally
+  (global-set-key (kbd "s-3") (kbd "C-x 3"))  ;; Cmd-3 split vertically
+  (global-set-key (kbd "s-0") (kbd "C-x 0"))  ;; Cmd-0...
+  (global-set-key (kbd "s-w") (kbd "C-x 0"))  ;; ...and Cmd-w to close current window
+#+END_SRC
+*** Text editing
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :config
+    (global-set-key (kbd "s-'") 'er/expand-region) ;; Cmd+' (apostrophe) to expand
+    (global-set-key (kbd "s-\"") 'er/contract-region)) ;; Cmd+" (same, but with shift to contract)
+
+  ;; Move-text lines around with meta-up/down.
+  (use-package move-text
+    :config
+    (move-text-default-bindings))
+
+  ;; Comment line or region.
+  (global-set-key (kbd "s-/") 'comment-line)
+#+END_SRC
 *** Ivy
 #+BEGIN_SRC emacs-lisp
-(use-package ivy
-  :ensure t)
+  (use-package ivy
+    :diminish  ;; don't show Ivy in minor mode list
+    :config
+    (ivy-mode 1)  ;; enable Ivy everywhere
+    (setq ivy-use-virtual-buffers t)  ;; show bookmarks and recent files in buffer list
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+
+    (setq ivy-re-builders-alist
+	  '((swiper . ivy--regex-plus)
+	    (t      . ivy--regex-fuzzy))) ;; enable fuzzy searching everywhere except for Swiper
+
+  (global-set-key (kbd "s-b") 'ivy-switch-buffer)  ;; Cmd+b show buffers and recent files
+  (global-set-key (kbd "M-s-b") 'ivy-resume)) ;; Alt+Cmd+b resume whatever Ivy was doing
+
+  ;; Make Ivy a bit more friendly by adding information to ivy buffers, e.g. description of commands in Alt-x, meta info when switching buffers, etc.
+  (use-package ivy-rich
+    :config
+    (ivy-rich-mode 1)
+    (setq ivy-rich-path-style 'abbrev)) ;; Abbreviate paths using abbreviate-file-name (e.g. replace “/home/username” with “~”)
 #+END_SRC
 *** which-key
 #+BEGIN_SRC emacs-lisp
@@ -771,9 +883,25 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 *** Swiper
 #+BEGIN_SRC emacs-lisp
-(use-package swiper
-  :ensure t)
-(global-set-key "\C-s" 'swiper)
+  (use-package swiper
+    :config
+    (global-set-key "\C-s" 'swiper)  ;; Default Emacs Isearch forward..
+    (global-set-key "\C-r" 'swiper)  ;; ... And Isearch backward replaced with Swiper
+    (global-set-key (kbd "s-f") 'swiper)) ;; Cmd+f find text
+#+END_SRC
+*** Counsel
+#+BEGIN_SRC emacs-lisp
+  ;; Better menus with Counsel (a layer on top of Ivy)
+  (use-package counsel
+    :config
+    (global-set-key (kbd "M-x") 'counsel-M-x)            ;; Alt+x run command
+    (global-set-key (kbd "s-P") 'counsel-M-x)            ;; Cmd+Shift+p run command
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)  ;; Replace built-in Emacs 'find file' (open file) with Counsel
+    (global-set-key (kbd "s-o") 'counsel-find-file))     ;; Cmd+o open file
+
+  (use-package smex)  ;; show recent commands when invoking Alt-x (or Cmd+Shift+p)
+  (use-package flx)   ;; enable fuzzy matching
+  (use-package avy)   ;; enable avy for quick navigation
 #+END_SRC
 * Autocomplete settings
 #+BEGIN_SRC emacs-lisp
@@ -785,17 +913,70 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 * Auto-complete and ispell
 #+BEGIN_SRC emacs-lisp
-;; Completion words longer than 4 characters
-(custom-set-variables
-  '(ac-ispell-requires 4)
-  '(ac-ispell-fuzzy-limit 2))
+  ;; Completion words longer than 4 characters
+  (custom-set-variables
+    '(ac-ispell-requires 4)
+    '(ac-ispell-fuzzy-limit 2))
 
-(eval-after-load "auto-complete"
-  '(progn
-      (ac-ispell-setup)))
+  (eval-after-load "auto-complete"
+    '(progn
+	(ac-ispell-setup)))
 
-(add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
-(add-hook 'mail-mode-hook 'ac-ispell-ac-setup)
+  (add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
+  (add-hook 'mail-mode-hook 'ac-ispell-ac-setup)
+
+  (use-package company
+    :config
+    (setq company-idle-delay 0.1)
+    (setq company-global-modes '(not org-mode))
+    (setq company-minimum-prefix-length 1)
+    (add-hook 'after-init-hook 'global-company-mode))
+
+
+  ;; Set the company completion vocabulary to css and html when in web-mode.
+  (defun my-web-mode-hook ()
+    (set (make-local-variable 'company-backends) '(company-css company-web-html company-yasnippet company-files)))
+
+  ;; ===========================
+  ;; SPELLCHECKING AND THESAURUS
+
+
+  ;; Spellchecking requires an external command to be available. Install aspell on your Mac, then make it the default checker for Emacs' ispell. Note that personal dictionary is located at ~/.aspell.LANG.pws by default.
+  (setq ispell-program-name "aspell")
+
+
+  ;; Popup window for spellchecking
+  (use-package flyspell-correct)
+  (use-package flyspell-correct-popup)
+
+
+  ;; Enable spellcheck on the fly for all text modes. This includes org, latex and LaTeX.
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+
+  ;; Enable right mouse click on macOS to see the list of suggestions.
+  (eval-after-load "flyspell"
+    '(progn
+       (define-key flyspell-mouse-map [down-mouse-3] #'flyspell-correct-word)
+       (define-key flyspell-mouse-map [mouse-3] #'undefined)))
+
+
+  ;; Spellcheck current word
+  (define-key flyspell-mode-map (kbd "s-\\") 'flyspell-correct-previous-word-generic) ;; Cmd+\ spellcheck word with popup
+  (define-key flyspell-mode-map (kbd "C-s-\\") 'ispell-word)                          ;; Ctrl+Cmd+\ spellcheck word using built UI
+
+
+  ;; Search for synonyms
+  (use-package powerthesaurus
+    :config
+    (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-dwim)) ;; Cmd+Shift+\ search thesaurus
+
+
+  ;; Word definition search
+  (use-package define-word
+    :config
+    (global-set-key (kbd "M-\\") 'define-word-at-point))
 #+END_SRC
 * UI settings
 ** Highlight the current line
@@ -805,41 +986,41 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 ** Disable window chrome
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode 0)
-(menu-bar-mode 0)
-;; Don't show native OS scroll bars for buffers because they're redundant
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
+  ;; Don't show native OS scroll bars for buffers because they're redundant
+  (when (fboundp 'scroll-bar-mode)
+    (scroll-bar-mode -1))
 
-;; No cursor blinking, it's distracting
-(blink-cursor-mode nil)
+  ;; No cursor blinking, it's distracting
+  (blink-cursor-mode nil)
 
-;; full path in title bar
-(setq-default frame-title-format "%b (%f)")
+  ;; full path in title bar
+  (setq-default frame-title-format "%b (%f)")
 
-;; Opens emacs to fullscreen mode
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;; Opens emacs to fullscreen mode
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
 #+END_SRC
 ** Scroll conservatively
 #+BEGIN_SRC emacs-lisp
-(setq scroll-conservatively 300)
+  (setq scroll-conservatively 300)
 #+END_SRC
 ** Open org tree in right frame
 #+BEGIN_SRC emacs-lisp
-(defun org-tree-open-in-right-frame ()
-  (interactive)
-  (org-tree-to-indirect-buffer)
-  (windmove-right))
+  (defun org-tree-open-in-right-frame ()
+    (interactive)
+    (org-tree-to-indirect-buffer)
+    (windmove-right))
 #+END_SRC
 ** Move region or subtree to other window
 #+BEGIN_SRC emacs-lisp
-(defun move-region-or-subtree-to-other-window ()
-  (interactive)
-  (when (and
-         (eq 'org-mode major-mode)
-         (not (region-active-p)))
-    (org-mark-subtree))
-  (call-interactively 'org-tree-to-indirect-buffer))
+  (defun move-region-or-subtree-to-other-window ()
+    (interactive)
+    (when (and
+	   (eq 'org-mode major-mode)
+	   (not (region-active-p)))
+      (org-mark-subtree))
+    (call-interactively 'org-tree-to-indirect-buffer))
 #+END_SRC
 ** Spaceline
 #+BEGIN_SRC emacs-lisp
@@ -859,14 +1040,13 @@ Simply press C-c r to reload the config file.
   (use-package spaceline-all-the-icons
     :after spaceline
     :config (spaceline-all-the-icons-theme))
-
 #+END_SRC
 ** Clock
 *** Time format
 #+BEGIN_SRC emacs-lisp
-(setq display-time-24hr-format t)
-(setq display-time-format "%H:%M - %d %B %Y")
-(display-time-mode 1)
+  (setq display-time-24hr-format t)
+  (setq display-time-format "%H:%M - %d %B %Y")
+  (display-time-mode 1)
 #+END_SRC
 ** Battery indicator
 #+BEGIN_SRC emacs-lisp
@@ -879,6 +1059,25 @@ Simply press C-c r to reload the config file.
       (fancy-battery-mode)
       (display-battery-mode)))
 #+END_SRC
+** Neotree
+#+BEGIN_SRC emacs-lisp
+  (use-package neotree
+    :config
+    (setq neo-window-width 32
+	  neo-create-file-auto-open t
+	  new-banner-message nil
+	  new-show-updir-line t
+	  new-window-fixed-size nil
+	  neo-vc-integration nil
+	  neo-mode-line-type 'neotree
+	  neo-smart-open t
+	  neo-show-hidden-files t
+	  neo-mode-line-type 'none
+	  neo-auto-indent-point t)
+    (setq neo-theme (if (display-graphic-p) 'nerd 'arrow))
+    (setq neo-hidden-regexp-list '("venv" "\\.pyc$" "~$" "\\.git" "__pycache__" ".DS_Store"))
+    (global-set-key (kbd "s-B") 'neotree-toggle))  ;;Cmd+Shift+b toggle tree
+#+END_SRC
 * Programming customizations
 ** Paredit
 #+BEGIN_SRC emacs-lisp
@@ -890,11 +1089,10 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 ** Flycheck
 #+BEGIN_SRC emacs-lisp
-;; use flycheck not flymake with elpy
-(require 'elpy)
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+  ;; use flycheck not flymake with elpy
+  (use-package flycheck
+    :ensure t
+    :init (global-flycheck-mode))
 #+END_SRC
 ** PEP-8
 #+BEGIN_SRC emacs-lisp
@@ -904,27 +1102,27 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 ** Lisps
 #+BEGIN_SRC emacs-lisp
-(setq lispy-mode-hooks
-  '(clojure-mode-hook
-    emacs-lisp-hook
-    lisp-mode-hook
-    scheme-mode-hook))
+  (setq lispy-mode-hooks
+    '(clojure-mode-hook
+      emacs-lisp-hook
+      lisp-mode-hook
+      scheme-mode-hook))
 
-(dolist (hook lispy-mode-hooks)
-  (add-hook hook (lambda ()
-                   (setq show-pa~ren-style 'expression)
-                   (paredit-mode)
-                   (rainbow-delimiters-mode))))
+  (dolist (hook lispy-mode-hooks)
+    (add-hook hook (lambda ()
+		     (setq show-paren-style 'expression)
+		     (paredit-mode)
+		     (rainbow-delimiters-mode))))
 
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+  (add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
 (require 'json)
-(elpy-enable)
-(require 'ein)
+;;(elpy-enable)
+;;(require 'ein)
 
-(define-key yas-minor-mode-map (kbd "C-c k") 'yas-expand)
+;;(define-key yas-minor-mode-map (kbd "C-c k") 'yas-expand)
 (define-key global-map (kbd "C-c o") 'iedit-mode)
 
 (require 'info-look)
@@ -936,34 +1134,47 @@ Simply press C-c r to reload the config file.
 #+END_SRC
 ** Terminal settings
 #+BEGIN_SRC emacs-lisp
-(defvar my-term-shell "/bin/bash")
-(defadvice ansi-term (before force-bash)
-  (interactive (list my-term-shell)))
-(ad-activate 'ansi-term)
-(global-set-key (kbd "<s-return>") 'ansi-term)
+  (defvar my-term-shell "/bin/bash")
+  (defadvice ansi-term (before force-bash)
+    (interactive (list my-term-shell)))
+  (ad-activate 'ansi-term)
+  (global-set-key (kbd "<s-return>") 'ansi-term)
 #+END_SRC
 ** Rainbows
 #+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 #+END_SRC
-** SLIME
+** COMMENT SLIME
 #+BEGIN_SRC emacs-lisp
-  (setq inferior-lisp-program "/opt/sbcl/bin/sbcl")
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  (require 'slime)
   (require 'ac-slime)
   (add-hook 'slime-mode-hook 'set-up-slime-ac)
   (add-hook 'slime-repl-mode-hook 'set-up-slime-ac)
   (eval-after-load "auto-complete"
     '(add-to-list 'ac-modes 'slime-repl-mode))
+  (setq slime-lisp-implementations
+	'((sbcl ("sbcl" "--core" "sbcl.core-for-slime"))))
+
+  (defun slime-repl-skip-eval-when-reading (slime-eval &rest args)
+    (if (slime-reading-p)
+	(user-error "Synchronous Lisp Evaluation suppressed while reading input")
+	(apply slime-eval args)))
+
+  (advice-add 'slime-eval :around #'slime-repl-skip-eval-when-reading)
 #+END_SRC
 ** Clojure
 #+BEGIN_SRC emacs-lisp
-(use-package cider
-  :ensure t
-  :init
-    (add-hook 'clojure-mode-hook #'cider-mode)
-  :config
-  (add-hook 'cider-mode-hook 'eldoc-mode)
-  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+  (use-package cider
+    :ensure t
+    :init
+      (add-hook 'clojure-mode-hook #'cider-mode)
+    :config
+    (add-hook 'cider-mode-hook 'eldoc-mode)
+    (add-hook 'cider-mode-hook #'company-mode)
+    ;; (add-hook 'cider-repl-mode-hook #'company-m)
+    (add-hook 'cider-repl-mode-hook #'paredit-mode))
 #+END_SRC
 * Editing settings
 ** Always kill current buffer
@@ -978,13 +1189,13 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 (require 'yasnippet)
 (yas-global-mode 1)
 (setq yas-snippet-dirs '("~/.emacs.d/snippets/text-mode"))
-(define-key yas-minor-mode-map (kbd "<tab>") nil)
-(define-key yas-minor-mode-map (kbd "TAB") nil)
+;;(define-key yas-minor-mode-map (kbd "<tab>") nil)
+;;(define-key yas-minor-mode-map (kbd "TAB") nil)
 ;; Bind `SPC' to `yas-expand' when snippet expansion available (it
 ;; will still call `self-insert-command' otherwise).
-(define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
+;;(define-key yas-minor-mode-map (kbd "SPC") yas-maybe-expand)
 ;; Bind `C-c y' to `yas-expand' ONLY.
-(define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
+;;(define-key yas-minor-mode-map (kbd "C-c y") #'yas-expand)
 #+END_SRC
 ** Configure abbrev-mode
 #+BEGIN_SRC emacs-lisp
@@ -1029,7 +1240,7 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+BEGIN_SRC emacs-lisp
 (require 'helm-mode)
 (require 'helm-config)
-(setq org-completion-use-ido nil)
+;;(setq org-completion-use-ido nil)
 ;; rebind tab to run persistant action
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
 
@@ -1050,27 +1261,6 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 (auto-package-update-maybe)
 (setq auto-package-update-prompt-before-update t)
 (setq auto-package-update-delete-old-versions t)
-#+END_SRC
-* PDF Tools config
-#+BEGIN_SRC emacs-lisp
-;;(pdf-tools-install)
-(use-package pdf-tools
- :pin manual ;; manually update
- :config
- ;; open pdfs scaled to fit page
- (setq-default pdf-view-display-size 'fit-page)
- ;; automatically annotate highlights
- (setq pdf-annot-activate-created-annotations t)
- ;; use normal isearch
- (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
- ;; turn off cua so copy works
- (add-hook 'pdf-view-mode-hook (lambda () (cua-mode 0)))
- ;; more fine-grained zooming
- (setq pdf-view-resize-factor 1.1)
- ;; keyboard shortcuts
- (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
- (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
- (defineq-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete))
 #+END_SRC
 * Text Manipulation
 ** Improved kill-word
@@ -1110,6 +1300,7 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'custom-theme-load-path "~/.emacs.d/blackboard-theme")
 (add-to-list 'custom-theme-load-path "~/.emacs.d/emacs-planet-theme")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/Emacs-Tron-Legacy-Theme")
 #+END_SRC
 * Pomidor
 #+BEGIN_SRC emacs-lisp
@@ -1161,9 +1352,10 @@ Assume that I always want to kill the current buffer when hitting C-x k.
 #+END_SRC
 * Projectile
 #+BEGIN_SRC emacs-lisp
-;; use helm-projectile insted of regular projectile
-(require 'helm-projectile)
-(helm-projectile-on)
+  ;; use helm-projectile insted of regular projectile
+  (use-package helm-projectile
+    :config
+    (helm-projectile-on))
 #+END_SRC
 * Custom functions
 #+BEGIN_SRC emacs-lisp
@@ -1179,3 +1371,57 @@ Assume that I always want to kill the current buffer when hitting C-x k.
   (eval-after-load 'image+ '(imagex-global-sticky-mode 1))
 #+END_SRC
 *
+* Web-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package web-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+  (setq web-mode-engines-alist
+  '(("django"    . "\\.html\\'")))
+  (setq web-mode-ac-sources-alist
+  '(("css" . (ac-source-css-property))
+  ("html" . (ac-source-words-in-buffer ac-source-abbrev))))
+
+  (setq web-mode-enable-auto-closing t)
+  (setq web-mode-enable-auto-quoting t))
+  ;; JSX syntax highlighting
+  (setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+
+  ;; indentation
+  (defun web-mode-init-hook ()
+    "Hooks for Web mode.  Adjust indent."
+    (setq web-mode-markup-indent-offset 4))
+
+  (add-hook 'web-mode-hook  'web-mode-init-hook)
+#+END_SRC
+* Live eslint errors
+#+BEGIN_SRC emacs-lisp
+  ;;;  disable default jslint
+  (setq-default flycheck-disabled-checkers
+		(append flycheck-disabled-checkers
+			'(javascript-jshint json-jsonlist)))
+
+  ;; use a global eslint and enable for web-mode
+  ;; Enable eslint checker for web-mode
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  ;; Enable flycheck globally
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+#+END_SRC
+* Prettier.js automatic formatting
+#+BEGIN_SRC emacs-lisp
+  (use-package prettier-js
+    :ensure t)
+
+  ;; Enable prettier-js-mode for files in a project with prettier (this will use the projects .prettierrc):
+  (defun web-mode-init-prettier-hook ()
+    (add-node-modules-path)
+    (prettier-js-mode))
+
+  (add-hook 'web-mode-hook  'web-mode-init-hook)
+#+END_SRC
+* Sudoku
+#+BEGIN_SRC emacs-lisp
+(require 'sudoku)
+#+END_SRC

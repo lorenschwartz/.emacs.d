@@ -1,25 +1,15 @@
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
-;;  '(custom-safe-themes
-;;    (quote
-;;     ("06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a"
-;;      "82d2cac368ccdec2fcc7573f24c3f79654b78bf133096f9b40c20d97ec1d8016"
-;;      "bb08c73af94ee74453c90422485b29e5643b73b05e8de029a6909af6a3fb3f58"
-;;      "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879"
-;;      "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4"
-;;       "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0"
-;;       default)))
-;;  '(package-selected-packages
-;;    (quote
-;;     (google-this org-bullets color-theme-sanityinc-tomorrow solarized-theme csv-mode darkroom diffview))))
+;;; package --- summary:
+
+;;; Commentary:
+
 ;; (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  ;; )
+
+;;; Code:
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -68,28 +58,28 @@
  '(magit-diff-use-overlays nil)
  '(neo-window-position (quote right))
  '(org-agenda-diary-file (concat org-directory "Diary.org"))
- '(org-agenda-file (quote org-directory))
  '(org-agenda-files
    (quote
-    ("/Users/darkhelmet/Dropbox/modules/AlphaPort/design/AlphaPort.org" "/Users/darkhelmet/Dropbox/org-files/Diary.org" "/Users/darkhelmet/Dropbox/org-files/Inbox.org" "/Users/darkhelmet/Dropbox/org-files/Main.org")))
+    ("/Users/darkhelmet/Dropbox/org-files/Diary.org" "/Users/darkhelmet/Dropbox/org-files/Inbox.org" "/Users/darkhelmet/Dropbox/org-files/Main.org" "/Users/darkhelmet/Dropbox/org-files/Regulatory.org" "/Users/darkhelmet/Dropbox/org-files/AML.org" "/Users/darkhelmet/Dropbox/org-files/Personal.org")))
  '(org-agenda-include-diary t)
  '(org-agenda-ndays 7)
  '(org-agenda-restore-windows-after-quit t)
  '(org-agenda-show-all-dates t)
  '(org-agenda-skip-deadline-if-done t)
  '(org-agenda-skip-unavailable-files t)
- '(org-agenda-span 5)
+ '(org-agenda-span 1)
  '(org-agenda-start-on-weekday t)
  '(org-agenda-window-frame-fractions (quote (1 . 1)))
- '(org-agenda-window-setup (quote current-window))
  '(org-archive-location "%s_archive::datetree/*")
  '(org-confirm-babel-evaluate nil)
  '(org-deadline-warning-days 7)
  '(org-default-notes-file (concat org-directory "org-files/Inbox.org"))
- '(org-default-priority 66)
  '(org-directory "~/Dropbox/")
  '(org-ellipsis "⤵")
  '(org-fast-tag-selection-single-key (quote expert))
+ '(org-habit-following-days 1)
+ '(org-habit-graph-column 80)
+ '(org-habit-show-done-always-green t)
  '(org-index-file (concat org-directory "org-files/Main.org"))
  '(org-log-done (quote time))
  '(org-modules
@@ -100,9 +90,10 @@
  '(org-src-tabs-act-natively t)
  '(org-src-window-setup (quote current-window))
  '(org-startup-truncated t)
+ '(org-use-property-inheritance nil)
  '(package-selected-packages
    (quote
-    (spaceline-all-the-icons ox-reveal htmlize cider cider-eval-sexp-fu image+ hydandata-light-theme ac-slime slime tablist interleave yankpad rainbow-delimiters paredit clojure-snippets helm-projectile bbdb captain pomidor atom-one-dark-theme swiper switch-window which-key fancy-battery spaceline ac-ispell all-the-icons wsd-mode fastnav monokai-theme magit xkcd use-package treemacs-projectile treemacs markdown-mode minimap exec-path-from-shell ein py-autopep8 flycheck helm project-explorer python orgbox yaml-mode projectile dashboard page-break-lines ecukes multiple-cursors emojify emoji-fontset gruvbox-theme jedi elpy org-ac ac-emoji solarized-theme org-bullets google-this engine-mode diffview darkroom csv-mode color-theme-sanityinc-tomorrow)))
+    (powerthesaurus web-mode auto-package-update cider sudoku ob-clojurescript pdf-tools prettier-js-mode prettier-js add-node-modules-path react-snippets flyspell-correct-popup flyspell-correct avy neotree define-word counsel flx smex ivy-rich expand-region move-text spaceline-all-the-icons ox-reveal htmlize cider-eval-sexp-fu image+ hydandata-light-theme ac-slime slime tablist interleave yankpad rainbow-delimiters paredit clojure-snippets helm-projectile bbdb captain pomidor atom-one-dark-theme swiper switch-window which-key fancy-battery spaceline ac-ispell all-the-icons wsd-mode fastnav monokai-theme magit xkcd use-package treemacs-projectile treemacs markdown-mode minimap exec-path-from-shell ein py-autopep8 flycheck helm project-explorer python orgbox yaml-mode projectile dashboard page-break-lines ecukes multiple-cursors emojify emoji-fontset gruvbox-theme jedi elpy org-ac ac-emoji solarized-theme org-bullets google-this engine-mode diffview darkroom csv-mode color-theme-sanityinc-tomorrow)))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(send-mail-function nil)
