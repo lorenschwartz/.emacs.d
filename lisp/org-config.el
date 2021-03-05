@@ -35,7 +35,7 @@
         ("s" "Scheduled Todo" entry (file+headline org-main-file "Inbox")
          "* TODO %? %^G\n SCHEDULED:%^t")
         ("i" "Issue" entry (file+headline org-main-file "Inbox")
-         "* ISSUE %? %^G\n :PROPERTIES:\n :SEVERITY: %^{SEVERITY}\n :END:")
+         "* ISSUE %? %^G\n")
         ("p" "Project" entry (file+headline org-main-file "Projects")
          "* NEW %? %^G\n :PROPERTIES:\n :STATE: %^{STATE}\n :PM: %^{PM}\n :END:")
         ("I" "Idea" entry (file+headline org-main-file "Incubator")
@@ -45,7 +45,7 @@
         ("w" "Work Journal" entry (file+olp+datetree org-main-file "Journal")
          "* %U\n %?")
         ("f" "Follow Up" entry (file+headline org-main-file "Inbox")
-         "** FOLLOW UP %? %^G\n :PROPERTIES:\n :ASSIGNEE: %^{ASSIGNEE}\n :END:")))
+         "** FOLLOW UP %? %^G\n")))
 
 (setq org-todo-keywords
       '((sequence "TODO(t)" "NEXT(n)" "DOING" "|" "DONE(d)")
