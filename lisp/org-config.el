@@ -69,10 +69,14 @@
          ((agenda "" ((org-agenda-ndays 5)))
           (todo "FOLLOW UP"
                 ((org-agenda-overriding-header "Follow Up Items")))
+          (todo "ISSUE"
+                ((org-agenda-overriding-header "Issue List")
+                 (org-agenda-sorting '(priority-down))))
           (tags "PRIORITY=\"A\""
                 ((org-agenda-skip-function
                   '(or (ls-org-skip-subtree-if-follow-up)
-                       (org-agenda-skip-entry-if 'todo 'done)))
+                       (org-agenda-skip-entry-if 'todo 'done)
+                       (org-agenda-skip-entry-if 'todo '("ISSUE"))))
                  (org-agenda-sorting '(tag-up))
                  (org-agenda-overriding-header "High Priority Items")))
           (tags "STATE=\"Red\""
@@ -81,10 +85,6 @@
           (tags "STATE=\"Yellow\""
                 ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                 (org-agenda-overriding-header "Projects At Risk")))
-          (tags "STATE=\"Green\""
-               ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                (org-agenda-overriding-header "On track")
-                (org-agenda-sorting-strategy '(tag-up))))
           (alltodo ""
                    ((org-agenda-skip-function
                      '(or (ls-org-skip-subtree-if-priority ?A)
@@ -93,10 +93,15 @@
                           (ls-org-skip-subtree-if-state-green)
                           (ls-org-skip-subtree-if-habit)
                           (ls-org-skip-subtree-if-follow-up)
-                          (org-agenda-skip-if nil '(scheduled deadline))))
+                          (org-agenda-skip-entry-if 'todo '("ISSUE"))
+                          (org-agenda-skip-if nil '(scheduled deadline)))))
                     (org-agenda-sorting
                      '(tag-down priority-down))
-                    (org-agenda-overriding-header "All normal priority tasks:")))))))
+                    (org-agenda-overriding-header "All normal priority tasks:"))
+          (tags "STATE=\"Green\""
+               ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                (org-agenda-overriding-header "On track")
+                (org-agenda-sorting-strategy '(tag-up))))))))
 
 (defun ls-org-skip-subtree-if-habit ()
   "Skip an agenda entry if it has a STYLE property equal to habit."
