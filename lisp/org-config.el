@@ -67,12 +67,6 @@
 (setq org-agenda-custom-commands
       '(("p" "Priority Agenda View"
          ((agenda "" ((org-agenda-ndays 5)))
-          (todo "FOLLOW UP"
-                ((org-agenda-overriding-header "Follow Up Items")
-                 (org-agenda-sorting-strategy '(priority-down tag-up))))
-          (todo "ISSUE"
-                ((org-agenda-overriding-header "Issue List")
-                 (org-agenda-sorting '(priority-down))))
           (tags "PRIORITY=\"A\""
                 ((org-agenda-skip-function
                   '(or (ls-org-skip-subtree-if-follow-up)
@@ -80,13 +74,6 @@
                        (org-agenda-skip-entry-if 'todo '("ISSUE"))))
                  (org-agenda-sorting-strategy '(tag-up))
                  (org-agenda-overriding-header "High Priority Items")))
-          (tags "STATE=\"Red\""
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                 (org-agenda-overriding-header "Overdue Projects")
-                 (org-agenda-sorting-strategy '(tag-up))))
-          (tags "STATE=\"Yellow\""
-                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
-                (org-agenda-overriding-header "Projects At Risk")))
           (alltodo ""
                    ((org-agenda-skip-function
                      '(or (ls-org-skip-subtree-if-priority ?A)
@@ -99,6 +86,19 @@
                           (org-agenda-skip-if nil '(scheduled deadline)))))
                     (org-agenda-sorting
                      '(tag-down priority-down)))
+          (todo "FOLLOW UP"
+                ((org-agenda-overriding-header "Follow Up Items")
+                 (org-agenda-sorting-strategy '(priority-down tag-up))))
+          (todo "ISSUE"
+                ((org-agenda-overriding-header "Issue List")
+                 (org-agenda-sorting '(priority-down))))
+          (tags "STATE=\"Red\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "Overdue Projects")
+                 (org-agenda-sorting-strategy '(tag-up))))
+          (tags "STATE=\"Yellow\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                (org-agenda-overriding-header "Projects At Risk")))
           (tags "STATE=\"Green\""
                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
                 (org-agenda-overriding-header "On track")
