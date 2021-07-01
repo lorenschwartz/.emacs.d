@@ -46,31 +46,45 @@
 (when (daemonp)
   (exec-path-from-shell-initialize))
 
+(unless (package-installed-p 'quelpa)
+  (with-temp-buffer
+    (url-insert-file-contents "https://raw.githubusercontent.com/quelpa/quelpa/master/quelpa.el")
+    (eval-buffer)
+    (quelpa-self-upgrade)))
+
+(quelpa
+ '(quelpa-use-package
+   :fetcher git
+   :url "https://github.com/quelpa/quelpa-use-package.git"))
+(require 'quelpa-use-package)
+
 (require 'helper-functions)
 (require 'better-defaults)
 (require 'org-config)
-(require 'nano-layout)
+;;(require 'nano-layout)
 
 ;; Theming Command line options (this will cancel warning messages)
-(add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
-(add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
-(add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
+;; (add-to-list 'command-switch-alist '("-dark"   . (lambda (args))))
+;; (add-to-list 'command-switch-alist '("-light"  . (lambda (args))))
+;; (add-to-list 'command-switch-alist '("-default"  . (lambda (args))))
 
-(cond
- ((member "-default" command-line-args) t)
- ((member "-dark" command-line-args) (require 'nano-theme-dark))
- (t (require 'nano-theme-light)))
+;; (cond
+;;  ((member "-default" command-line-args) t)
+;;  ((member "-dark" command-line-args) (require 'nano-theme-dark))
+;;  (t (require 'nano-theme-light)))
 
 ;; Theme
-(require 'nano-faces)
-(nano-faces)
+;;(require 'nano-faces)
+;;(nano-faces)
 
-(require 'nano-theme)
-(nano-theme)
+;;(require 'nano-theme)
+;;(nano-theme)
 
 ;; Nano header & mode lines (optional)
-(require 'nano-modeline)
+;;(require 'nano-modeline)
 
-; (provide 'nano)
+;; (provide 'nano)
+
+(load-theme 'nano t)
 
 (require 'my-packages)

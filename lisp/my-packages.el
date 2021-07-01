@@ -101,4 +101,11 @@
   :config
   (global-set-key (kbd "s-|") 'powerthesaurus-lookup-word-at-point))
 
+(use-package nano-theme
+  :ensure nil
+  :defer t
+  :quelpa (nano-theme
+           :fetcher github
+           :repo "rougier/nano-theme"))
+
 (provide 'my-packages)
